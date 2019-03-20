@@ -1,4 +1,22 @@
 body{
-    margin-top: 50px;
-    background-color: red;
+    margin-top: 30px; 
 }
+
+#footer{
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+   
+}
+
+.footerPlaceholder{
+    margin:   auto;
+
+}
+
+#chatContent{
+    background-color: beige;
+    height: 75rem;
+    overflow: scroll;
+}
+
