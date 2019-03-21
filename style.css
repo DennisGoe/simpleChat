@@ -1,22 +1,82 @@
 body{
-    margin-top: 30px; 
+    margin-top: 15px; 
+    margin-left: 15px;
+    background-color: #33353a;
 }
 
+/*login form*/
+#loginForm{
+    color: white;
+}
+
+
+
+
+
+/**==========right side of chat with messages========**/
+
+/**footer is where you type in the message*/
 #footer{
-      position: absolute;
       bottom: 0;
       width: 100%;
-   
+     float: right;
 }
 
-.footerPlaceholder{
-    margin:   auto;
-
-}
-
+/*space with the chat messages*/
 #chatContent{
-    background-color: beige;
-    height: 75rem;
-    overflow: scroll;
+    background-color: #7e8691;
+    min-height: 80vh;
+    max-height: 80vh;
+    overflow-y: scroll;
+
+}
+.settings{
+    background-color: #2d2e30;
+    color: white;
+    padding: 10px;
+    font-size: 20px;
 }
 
+.chatMessage{
+    padding : 5px;
+    color: white;
+    font-size: 20px;
+}
+
+/*===========users===========*/
+
+#onlineUsersWrapper{
+    min-height: 80vh;
+    margin: 0;
+    background-color: #474d56;
+    color:white;
+    overflow-y: scroll;
+}
+
+.userNameDiv{
+    list-style: none;
+    background-color: #767d87;
+    padding: 10px;
+}
+
+.line{
+    opacity: 0.3;
+}
+
+
+/**scrollbar styles**/
+::-webkit-scrollbar {
+    width: 10px;
+  }
+ 
+  ::-webkit-scrollbar-track {
+    background: #464747; 
+  }
+ 
+  ::-webkit-scrollbar-thumb {
+    background: #888; 
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }

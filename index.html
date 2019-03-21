@@ -20,7 +20,8 @@
  
 </head>
 <body>
-  <div class="container">
+<!--login form-->
+<div class="container">
     <div id="loginFormContainer" class="row">
       <div class="col-md-12">
           <form id="loginForm">
@@ -34,36 +35,45 @@
             </form>
       </div>
     </div>
-
+</div>
+<!--end of login form-->
     
-    <div class="row" id="messageContainer">
-      <div class="col-md-4">
-        <div class="well">
+    <div id="messageContainer">
+      <!--online users-->
+      <div class="col-md-4" id="onlineUsersWrapper">
           <h3>Online Users</h3>
           <ul class="list-group" id="users"></ul>
-        </div>
       </div>
+      <!--chat-->
       <div class="col-md-8">
-        <div class="chatContent" class="smooth-scroll" id="chatContent"> </div>
-        
+        <div class="chatContent" class="smooth-scroll" id="chatContent"> 
+            <div class="settings">
+              <p>Global chat</p>
+            </div>
+        </div>
+      <!--footer = line where you type the message in-->
+        <footer id="footer">
+            <div class="container">
+              <div id="footerPlaceholder">
+                <form id="messageForm">
+                  <div class="form-group">
+                  
+                    <input type="text" class="form-control" id="message" width="70%">
+                    </br>
+                    
+                  </div>
+                </form>
+              </div>
+            </div>
+          </footer>
       </div>
+      <!--end col-md-8 wrapper-->
     </div>
-  </div>
-   
+    <!--end message Container-->
+
+
+ 
     
 </body>
-<footer id="footer">
-  <div class="container">
-    <div id="footerPlaceholder">
-      <form id="messageForm">
-        <div class="form-group">
-          <label>Enter Message</label>
-          <input type="text" class="form-control" id="message" width="70%">
-          </br>
-          <input type="submit" class ="btn btn-primary" value="Send Message"/>
-        </div>
-      </form>
-    </div>
-  </div>
-</footer>
+
 </html>
