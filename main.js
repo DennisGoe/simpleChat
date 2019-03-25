@@ -1,5 +1,5 @@
 $(function(){
-    
+
     var socket = io.connect();
     var messageForm = $('#messageForm');
     var message = $('#message');
@@ -11,6 +11,7 @@ $(function(){
     var username = $('#username');
     var footer= $('#footer');
 
+
     var testMode = false;
 
     //hide the chat so user has to enter a name first
@@ -19,9 +20,9 @@ $(function(){
         loginForm.hide();
     }else{
         messageContainer.hide();
-        footer.hide();    
+        footer.hide();
     }
-   
+
 
     //aalways auto scrool to bottom of chat
     chatContent.scrollTop = chatContent.scrollHeight;
@@ -37,11 +38,12 @@ $(function(){
     //server emitts the new message
     //the content of that message is wrapped in a div and appended to the chat together with the user name
     socket.on('new message', function(data){
-        chatContent.append('<div class ="chatMessage"><strong>'+ data.username +'</br>'+'</strong> '+ data.msgContent +'<div><hr class="line">');
+      var currentdate = new Date();
+      var time = currentdate.getHours() + ":" + currentdate.getMinutes();
+        chatContent.append('<div class ="chatMessage"><strong>' + data.username +  '<p id="timestamp">' + time + '</p>' +'</br>'+'</strong> '+ data.msgContent +'<div><hr class="line">');
         chatContent.scrollTop(chatContent.height());
-    });
-
-    //this is called when the user logs in 
+});
+    //this is called when the user logs in
     //the 'new user' event is passed to the server
     loginForm.submit(function(e){
       e.preventDefault();
@@ -56,7 +58,7 @@ $(function(){
     });
 
     //this is called to show all the users
-    //the server returns a list with all the users so we can loop through it and display the names 
+    //the server returns a list with all the users so we can loop through it and display the names
     socket.on('get users', function(data){
       var html ='';
       for ( i = 0; i < data.length; i++){
@@ -64,4 +66,4 @@ $(function(){
       }
       users.html(html);
     })
-  });
+    });

@@ -1,5 +1,5 @@
 body{
-    margin-top: 15px; 
+    margin-top: 15px;
     margin-left: 15px;
     background-color: #33353a;
 }
@@ -43,6 +43,10 @@ body{
     font-size: 20px;
 }
 
+#timestamp{
+  font-size: 10px;
+}
+
 /*===========users===========*/
 
 #onlineUsersWrapper{
@@ -68,15 +72,15 @@ body{
 ::-webkit-scrollbar {
     width: 10px;
   }
- 
+
   ::-webkit-scrollbar-track {
-    background: #464747; 
+    background: #464747;
   }
- 
+
   ::-webkit-scrollbar-thumb {
-    background: #888; 
+    background: #888;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+    background: #555;
   }
