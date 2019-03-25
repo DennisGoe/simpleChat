@@ -28,14 +28,15 @@ app.get('/', function(req, res){
 io.sockets.on('connection', function(socket){
   amountConnections.push(socket);
   console.log(amountConnections.length + " sockets are connected");
-  
+
 //once a user disconnects the connection is removed from the list and the list of online users is updated
-  socket.on('disconnect', function(data){
+  socket.on('disconnect', function(socket){
     users.splice(users.indexOf(socket.username), 1);
     updateUsernames();
     //remove connection from list
     amountConnections.splice(amountConnections.indexOf(socket), 1);
     console.log(amountConnections.length + " sockets are connected");
+    io.sockets.emit('disconnect', {username: socket.username});
   });
 
   //is triggered once a message is sent. the 'send message' event is getting emitted to the client
@@ -46,7 +47,7 @@ io.sockets.on('connection', function(socket){
   });
 
   //is triggered once the user log into the system. it pushes the user to the list and updates the list of online users in the frontend
-  //also we give the socket the username 
+  //also we give the socket the username
   //the parameters are function(username, enteredDara is set to true once the user has entered a name)
   socket.on('new user', function(data, enteredData){
     enteredData(true);
@@ -59,5 +60,5 @@ io.sockets.on('connection', function(socket){
   function updateUsernames(){
     io.sockets.emit('get users', users);
   }
-  
+
 });

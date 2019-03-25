@@ -5,19 +5,19 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Simple Chat</title>
   <base href="/">
-  
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
- 
+
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-<script src ="main.js"></script>
+  <script src ="main.js"></script>
 
 
   <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/style.css">
-  
-  
- 
+
+
+
 </head>
 <body>
 <!--login form-->
@@ -31,13 +31,13 @@
                 </br>
                 <input type="submit" class ="btn btn-primary" value="Login"/>
               </div>
-    
+
             </form>
       </div>
     </div>
 </div>
 <!--end of login form-->
-    
+
     <div id="messageContainer">
       <!--online users-->
       <div class="col-md-4" id="onlineUsersWrapper">
@@ -46,7 +46,7 @@
       </div>
       <!--chat-->
       <div class="col-md-8">
-        <div class="chatContent" class="smooth-scroll" id="chatContent"> 
+        <div class="chatContent" class="smooth-scroll" id="chatContent">
             <div class="settings">
               <p>Global chat</p>
             </div>
@@ -57,10 +57,10 @@
               <div id="footerPlaceholder">
                 <form id="messageForm">
                   <div class="form-group">
-                  
+
                     <input type="text" class="form-control" id="message" width="70%">
                     </br>
-                    
+
                   </div>
                 </form>
               </div>
@@ -72,8 +72,8 @@
     <!--end message Container-->
 
 
- 
-    
+
+
 </body>
 
 </html>
