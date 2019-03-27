@@ -19,7 +19,8 @@ body{
 #footer{
       bottom: 0;
       width: 100%;
-     float: right;
+     float: left;
+     background-color: red;
 }
 
 /*space with the chat messages*/
@@ -47,6 +48,13 @@ body{
   font-size: 10px;
 }
 
+.userUpdate{
+  padding-left: 5px;
+}
+
+.input-sm{
+  width: 80% !important;
+}
 /*===========users===========*/
 
 #onlineUsersWrapper{

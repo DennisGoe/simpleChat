@@ -10,7 +10,7 @@ $(function(){
     var users = $('#users');
     var username = $('#username');
     var footer= $('#footer');
-    var oldList;
+   
 
     var testMode = false;
 
@@ -32,6 +32,7 @@ $(function(){
     //then the 'new message' event is emitted by the server and passed to the client
     messageForm.submit(function(e){
       e.preventDefault();
+      console.log("message: " + message.val());
       socket.emit('send message', message.val());
       message.val('');
     });
@@ -41,7 +42,7 @@ $(function(){
       var currentdate = new Date();
       var time = currentdate.getHours() + ":" + currentdate.getMinutes();
         chatContent.append('<div class ="chatMessage"><strong>' + data.username +  '<p id="timestamp">' + time + '</p>' +'</br>'+'</strong> '+ data.msgContent +'<div><hr class="line">');
-        chatContent.scrollTop(chatContent.height());
+        //chatContent.scrollTop(chatContent.height());
       });
     //this is called when the user logs in
     //the 'new user' event is passed to the server
@@ -52,30 +53,29 @@ $(function(){
             loginFormContainer.hide();
             messageContainer.show();
             footer.show();
-            chatContent.append('<div class ="chatMessage"><strong>' + username.val() + ' connected');
-
         }
       });
       username.val('');
     });
 
-    socket.on('disconnect', function(socket){
-      chatContent.append('<div class ="chatMessage"><strong>' + socket.username + ' disconnected');
-    })
+  
     //this is called to show all the users
     //the server returns a list with all the users so we can loop through it and display the names
     socket.on('get users', function(data){
       var html ='';
-      //if(data.length <= oldList){
-        //chatContent.append('<div class ="chatMessage"><strong>' + data[data.length - 1] + ' disconnected');
-      //}
-      //else {
-      //  chatContent.append('<div class ="chatMessage"><strong>' + data[data.length - 1] + ' connected');
-      //}
       for ( i = 0; i < data.length; i++){
         html += '<li class="userNameDiv"><strong>' + data[i] +'</strong></li>';
       }
       users.html(html);
       oldList = data.length;
-    })
+    });
+
+    //recognize disconnection of user
+    socket.on('new connection', function(data){
+      chatContent.append('<div class="userUpdate">' + data + " has connected" +'</div>');
+    });
+    //recognize disconnection of user 
+    socket.on('disconnect', function(data){
+     chatContent.append('<div class="userUpdate">' + data + " has left the chat" +'</div>');
+    });
     });

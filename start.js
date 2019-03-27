@@ -27,16 +27,20 @@ app.get('/', function(req, res){
 //the connection is then pushed to the 'amountConnections' array and is stored until user disconnects
 io.sockets.on('connection', function(socket){
   amountConnections.push(socket);
+  
   console.log(amountConnections.length + " sockets are connected");
 
+
 //once a user disconnects the connection is removed from the list and the list of online users is updated
-  socket.on('disconnect', function(socket){
+  socket.on('disconnect', function(e){
+ 
     users.splice(users.indexOf(socket.username), 1);
     updateUsernames();
+    
+    io.sockets.emit('disconnect', socket.username);
     //remove connection from list
     amountConnections.splice(amountConnections.indexOf(socket), 1);
     console.log(amountConnections.length + " sockets are connected");
-    io.sockets.emit('disconnect', {username: socket.username});
   });
 
   //is triggered once a message is sent. the 'send message' event is getting emitted to the client
@@ -46,7 +50,7 @@ io.sockets.on('connection', function(socket){
     io.sockets.emit('new message',{msgContent: data, username: socket.username});
   });
 
-  //is triggered once the user log into the system. it pushes the user to the list and updates the list of online users in the frontend
+  //is triggered once the user logs into the system. it pushes the user to the list and updates the list of online users in the frontend
   //also we give the socket the username
   //the parameters are function(username, enteredDara is set to true once the user has entered a name)
   socket.on('new user', function(data, enteredData){
@@ -54,6 +58,7 @@ io.sockets.on('connection', function(socket){
     socket.username = data;
     users.push(socket.username);
     updateUsernames();
+    io.sockets.emit('new connection', socket.username);
   });
 
   //updates the list of user. Returns the current list of users to the client.
