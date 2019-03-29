@@ -10,8 +10,6 @@ $(function(){
     var users = $('#users');
     var username = $('#username');
     var footer= $('#footer');
-    var localUsername = socket.username;
-
 
     var testMode = false;
 
@@ -41,15 +39,15 @@ $(function(){
     //server emitts the new message
     //the content of that message is wrapped in a div and appended to the chat together with the user name
     socket.on('new message', function(data){
-      if(data.username === socket.username){
+      if(data.username === username){
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
-          chatContent.append('<div class ="ownChatMessage">' + '<p id="username">' + data.username + '</p>' + '<p id="timestamp">' + time + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>');
+          chatContent.append('<div class ="ownChatMessage">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
       }
       else{
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
-          chatContent.append('<div class ="otherChatMessage">' + '<p id="username">' + data.username + '</p>' + '<p id="timestamp">' + time + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>');
+          chatContent.append('<div class ="otherChatMessage">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
 
       }
 
