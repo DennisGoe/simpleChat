@@ -58,8 +58,22 @@ io.sockets.on('connection', function(socket){
   //is triggered once a message is sent. the 'send message' event is getting emitted to the client
   //the callback function sends 'data' --> the messga it self and the username of the sender
   //the client creates a div that contains these data then
-  socket.on('send message', function(data){
-    io.sockets.emit('new message',{msgContent: data, username: socket.username});
+  socket.on('send message', function(data, chatID){
+    console.log("chatID " + chatID);
+    if(chatID =="globalChat"){
+      io.sockets.emit('new message',{msgContent: data, username: socket.username,chatID: chatID});
+    } else{
+      console.log("inside else");
+      for (let x = 0; x < allGroupChats.length; x++) {
+        if(allGroupChats[x][0] == chatID){
+          for (let y = 2; y < allGroupChats[x].length; y++) {
+
+            io.to(allGroupChats[x][y]).emit('new message',{msgContent: data, username: socket.username,chatID: chatID});
+          }
+        }
+        
+      }
+    }
   });
 
   //is triggered once the user logs into the system. it pushes the user to the list and updates the list of online users in the frontend

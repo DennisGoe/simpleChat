@@ -11,14 +11,14 @@ $(function(){
     var username = $('#username');
     var footer= $('#footer');
     var selectChatMembers = $('.selectChatMembers');
-    var allChats = $('.allChats');
+    var allChatsWrapper = $('.allChatsWrapper');
     var onlineUsersWrapper = $('#onlineUsersWrapper');
     var newChat = $('#newChat');
     var chosenUsers = $('.chosenUsers');
     var continueButton = $('#continueButton');
     var chatName = $('#chatName');
-    var chatNameTemp = "";
-
+    var tempChatID = "globalChat";
+    var allChatsContainer = $('.allChatsContainer');
 
 
     var chatID = "";
@@ -36,7 +36,7 @@ $(function(){
     }else{
         messageContainer.hide();
         footer.hide();
-        allChats.hide();
+        allChatsWrapper.hide();
         onlineUsersWrapper.hide();
     }
 
@@ -72,23 +72,31 @@ $(function(){
     messageForm.submit(function(e){
       e.preventDefault();
       console.log("message: " + message.val());
-      socket.emit('send message', message.val());
+      socket.emit('send message', message.val(), tempChatID);
       message.val('');
     });
 
     //server emitts the new message
     //the content of that message is wrapped in a div and appended to the chat together with the user name
     socket.on('new message', function(data){
+
       if(data.username === username){
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
-          chatContent.append('<div class ="ownChatMessage">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
+          chatContent.append('<div class ="ownChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
       }
       else{
+        console.log("inside else of new message");
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
-          chatContent.append('<div class ="otherChatMessage">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
+          chatContent.append('<div class ="otherChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
 
+      }
+      if(data.chatID == tempChatID){
+        console.log("chatID = tempChat");
+        $('div[messageID="' + data.chatID + '"]').hide();
+      } else{
+        $('div[messageID="' + data.chatID + '"]').hide();
       }
 
        
@@ -102,7 +110,7 @@ $(function(){
             loginFormContainer.hide();
             messageContainer.show();
             footer.show();
-            allChats.show();
+            allChatsWrapper.show();
             onlineUsersWrapper.show();
         }
       });
@@ -133,7 +141,6 @@ $(function(){
                 chatName.show();
                 if(chatName.val()){
                  chatID = generateChatID();
-                //  chatNameTemp = chatName.val();
                 
                  console.log("chatID: " + chatID);
                  newChatData.unshift(chatName.val());
@@ -154,8 +161,30 @@ $(function(){
     });
 
     socket.on('create chat', function(chatName){
-      allChats.append('<div class="singleChatRoom" id="' + chatName + '" chatID="' + chatID + '">' + chatName + '</div>');
-    })
+      console.log("create chat has been called");
+      allChatsContainer.append('<div class="singleChatRoom" id="' + chatID + '" chatID="' + chatID + '">' + chatName + '</div>');
+      tempChatID = this.id;
+      console.log("current temp chatID " + tempChatID);
+      allChatsContainer.children().unbind();
+
+
+      allChatsContainer.children().click(function(){
+      tempChatID = this.id;
+      console.log("this is the ID of the last clicked chat: " + tempChatID);
+
+      if($('div').attr("messageID") == tempChatID){
+        console.log("messageID = tempChatID");
+        $('div[messageID="' + tempChatID + '"]').show();
+      } else{
+        $('div[messageID="' + tempChatID + '"]').show();
+      }
+
+
+      
+    
+    });
+    
+    });
     //recognize disconnection of user
     socket.on('new connection', function(data){
       chatContent.append('<div class="userUpdate">' + data + " has joined the chat" +'</div>');
