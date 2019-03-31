@@ -10,20 +10,60 @@ $(function(){
     var users = $('#users');
     var username = $('#username');
     var footer= $('#footer');
+    var selectChatMembers = $('.selectChatMembers');
+    var allChats = $('.allChats');
+    var onlineUsersWrapper = $('#onlineUsersWrapper');
+    var newChat = $('#newChat');
+    var chosenUsers = $('.chosenUsers');
+    var continueButton = $('#continueButton');
+    var chatName = $('#chatName');
+    var chatNameTemp = "";
 
-    var testMode = false;
 
+
+    var chatID = "";
+    
+    var newChatData = [];
+
+    //here are the states for continue button. just as booleans
+    //these are used for creating a new chat since we want to use the same button mutliple times
+    var selectMode = false;
+  
     //hide the chat so user has to enter a name first
-
+    var testMode = false;
     if(testMode){
         loginForm.hide();
     }else{
         messageContainer.hide();
         footer.hide();
+        allChats.hide();
+        onlineUsersWrapper.hide();
     }
 
+    //here you find all the elements of the DOM that are initially hidden
+  
+    selectChatMembers.hide();
+    continueButton.hide();
+    chatName.hide();
 
-    //aalways auto scrool to bottom of chat
+    //the window for selecting chat members is initially hidden
+    newChat.submit(function(e){
+      e.preventDefault();
+      selectChatMembers.show();
+      selectMode = true;
+      $('#instructionsForCreatingNewChat').text("Select one or multiple chat members from the list of online users on the left!");
+      chatName.hide();
+      continueButton.hide();
+      //this array kepps all the data needed for a new group chat
+      //in the first index will be the group name and after that come the IDs of the sockets
+      //that happens in the section under "get users"
+      newChatData = [];
+    });
+
+   
+
+
+    //always auto scrool to bottom of chat
     chatContent.scrollTop = chatContent.scrollHeight;
 
     //is called when the user sends a message
@@ -51,7 +91,7 @@ $(function(){
 
       }
 
-        //chatContent.scrollTop(chatContent.height());
+       
       });
     //this is called when the user logs in
     //the 'new user' event is passed to the server
@@ -62,6 +102,8 @@ $(function(){
             loginFormContainer.hide();
             messageContainer.show();
             footer.show();
+            allChats.show();
+            onlineUsersWrapper.show();
         }
       });
       username.val('');
@@ -71,14 +113,49 @@ $(function(){
     //this is called to show all the users
     //the server returns a list with all the users so we can loop through it and display the names
     socket.on('get users', function(data){
-      var html ='';
+      users.children().unbind();
+     
+      users.html('');
       for ( i = 0; i < data.length; i++){
-        html += '<li class="userNameDiv">' + data[i] +'</li>';
+        users.append('<div class="userNameDiv" username="' +data[i][0] + '" id="' + data[i][1] +  '">' + data[i][0] +'</div>');
       }
-      users.html(html);
-      oldList = data.length;
+      // users.html(html);
+   
+        users.children().click(function(){
+          if(selectMode){
+            chosenUsers.append('<div class = "' + this.id + '">' + $(this).attr("username") + '</div>');
+            continueButton.show();
+            continueButton.off();
+            newChatData.push(this.id);
+            
+            continueButton.click(function(){
+                $('#instructionsForCreatingNewChat').text("Type in a name for the chat");
+                chatName.show();
+                if(chatName.val()){
+                 chatID = generateChatID();
+                //  chatNameTemp = chatName.val();
+                
+                 console.log("chatID: " + chatID);
+                 newChatData.unshift(chatName.val());
+                 newChatData.unshift(chatID);
+                 chosenUsers.children().empty();
+                 selectChatMembers.hide();
+                 chatName.val('');
+                 console.log("new chat data array " + newChatData);
+                 socket.emit('new chat', newChatData);
+                }
+            });
+          }   
+         
+            
+        });   
+     
+      
     });
 
+    socket.on('create chat', function(chatName){
+      allChats.append('<div class="singleChatRoom" id="' + chatName + '" chatID="' + chatID + '">' + chatName + '</div>');
+    })
     //recognize disconnection of user
     socket.on('new connection', function(data){
       chatContent.append('<div class="userUpdate">' + data + " has joined the chat" +'</div>');
@@ -87,4 +164,10 @@ $(function(){
     socket.on('disconnect', function(data){
      chatContent.append('<div class="userUpdate">' + data + " has left the chat" +'</div>');
     });
-    });
+
+    //We generate a unique ID for every single group chat so the server can determine to which group a message is sent
+    function generateChatID(){
+      return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7);
+    }
+
+    });//end of big function ALWAYS NEEDS TO BE HERE!

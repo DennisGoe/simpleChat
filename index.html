@@ -37,18 +37,25 @@
     </div>
 </div>
 <!--end of login form-->
-
+<div class="col-md-4" id="onlineUsersWrapper">
+  <h3 id="onlineUser">Online Users</h3>
+  <ul class="list-group" id="users"></ul>
+</div>
     <div id="messageContainer">
       <!--online users-->
-      <div class="col-md-4" id="onlineUsersWrapper">
-          <h3 id="onlineUser">Online Users</h3>
-          <ul class="list-group" id="users"></ul>
-      </div>
+     
       <!--chat-->
       <div class="col-md-8">
         <div class="chatContent" class="smooth-scroll" id="chatContent">
             <div class="settings">
               <p>Global chat</p>
+            </div>
+            <!--only shows when you click the new chat button-->
+            <div class="selectChatMembers">
+              <h3 id="instructionsForCreatingNewChat"></h3>
+              <input type ="text" id="chatName" placeholder="chat name...">
+              <div class="chosenUsers"></div>
+              <input type="button" value="Continue" id="continueButton">
             </div>
         </div>
       <!--footer = line where you type the message in-->
@@ -67,7 +74,12 @@
       <!--end col-md-8 wrapper-->
     </div>
     <!--end message Container-->
-
+<div class="allChats">
+  <form id="newChat">
+    <input type="submit" id="newChatButton" value="New Chat">
+  </form>
+  <div class="singleChatRoom" id="globalChat"><strong>Global Chat</strong></div>
+</div>
 
 
 
