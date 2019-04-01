@@ -19,7 +19,7 @@ $(function(){
     var chatName = $('#chatName');
     var tempChatID = "globalChat";
     var allChatsContainer = $('.allChatsContainer');
-
+    var chatMessages = $('.chatMessages');
 
     var chatID = "";
     
@@ -79,28 +79,30 @@ $(function(){
     //server emitts the new message
     //the content of that message is wrapped in a div and appended to the chat together with the user name
     socket.on('new message', function(data){
-
+      console.log('I received a new message for chat: ' + data.chatID);
+      console.log("The message has the content: " + data.msgContent);
       if(data.username === username){
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
-          chatContent.append('<div class ="ownChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
-      }
+        chatMessages.append('<div class ="ownChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
+        $('div[messageID="' + data.chatID + '"]').hide();
+        console.log("appending message to chat messages");
+        console.log(chatMessages.children());
+     }
       else{
         console.log("inside else of new message");
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
-          chatContent.append('<div class ="otherChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
-
-      }
-      if(data.chatID == tempChatID){
-        console.log("chatID = tempChat");
+        chatMessages.append('<div class ="otherChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
         $('div[messageID="' + data.chatID + '"]').hide();
-      } else{
-        $('div[messageID="' + data.chatID + '"]').hide();
+        console.log("appending message to chat messages");
+        console.log(chatMessages.children());
       }
-
-       
+      displayMessages();
+      
       });
+
+
     //this is called when the user logs in
     //the 'new user' event is passed to the server
     loginForm.submit(function(e){
@@ -127,7 +129,6 @@ $(function(){
       for ( i = 0; i < data.length; i++){
         users.append('<div class="userNameDiv" username="' +data[i][0] + '" id="' + data[i][1] +  '">' + data[i][0] +'</div>');
       }
-      // users.html(html);
    
         users.children().click(function(){
           if(selectMode){
@@ -141,7 +142,6 @@ $(function(){
                 chatName.show();
                 if(chatName.val()){
                  chatID = generateChatID();
-                
                  console.log("chatID: " + chatID);
                  newChatData.unshift(chatName.val());
                  newChatData.unshift(chatID);
@@ -163,22 +163,13 @@ $(function(){
     socket.on('create chat', function(chatName){
       console.log("create chat has been called");
       allChatsContainer.append('<div class="singleChatRoom" id="' + chatID + '" chatID="' + chatID + '">' + chatName + '</div>');
-      tempChatID = this.id;
       console.log("current temp chatID " + tempChatID);
       allChatsContainer.children().unbind();
-
-
+      
       allChatsContainer.children().click(function(){
       tempChatID = this.id;
       console.log("this is the ID of the last clicked chat: " + tempChatID);
-
-      if($('div').attr("messageID") == tempChatID){
-        console.log("messageID = tempChatID");
-        $('div[messageID="' + tempChatID + '"]').show();
-      } else{
-        $('div[messageID="' + tempChatID + '"]').show();
-      }
-
+      displayMessages();
 
       
     
@@ -187,16 +178,31 @@ $(function(){
     });
     //recognize disconnection of user
     socket.on('new connection', function(data){
-      chatContent.append('<div class="userUpdate">' + data + " has joined the chat" +'</div>');
+      chatMessages.append('<div class="userUpdate">' + data + " has joined the chat" +'</div>');
     });
     //recognize disconnection of user
     socket.on('disconnect', function(data){
-     chatContent.append('<div class="userUpdate">' + data + " has left the chat" +'</div>');
+     chatMessages.append('<div class="userUpdate">' + data + " has left the chat" +'</div>');
     });
 
     //We generate a unique ID for every single group chat so the server can determine to which group a message is sent
     function generateChatID(){
       return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7);
+    }
+
+    //this function displays the message depending on the currently selected chat group
+    function displayMessages(){
+      for(var index = 0; index < chatMessages.children().length; index++){
+        console.log("im looping through all the messages");
+        console.log(chatMessages.children().eq(index));
+        if(chatMessages.children().eq(index).attr("messageID") == tempChatID || chatMessages.children().eq(index).attr("class") == "userUpdate"){
+          chatMessages.children().eq(index).show();
+        } else {
+          chatMessages.children().eq(index).hide();
+        } 
+
+        
+      }
     }
 
     });//end of big function ALWAYS NEEDS TO BE HERE!
