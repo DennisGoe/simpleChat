@@ -25,13 +25,8 @@ p{
   background-color: red;
 }
 
-.singleChatRoom{
-  background-color: green;
-  height: 5%;
-}
-.singleChatRoom:hover {
-  background-color: blue;
-  height: 5%;
+.allChatsWrapper{
+  overflow-y: scroll;
 }
 
 
@@ -224,12 +219,20 @@ p{
 }
 
 .singleChatRoom{
-  height: 40px;
-  background-color: lightgrey;
+  height: 100px;
+  background-color: white;
+  text-align: center;
+  font-size: 40px;
+  border-bottom: 2px solid lightgrey;
 }
 
-.singleChatRoom:hover{
-  background-color: white;
+.singleChatRoom:focus{
+  background-color: green;
+}
+
+.active, .singleChatRoom:hover{
+  background-color: lightgrey;
+  height: 100px;
 }
 
 .container{
