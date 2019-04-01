@@ -50,6 +50,7 @@ p{
 /**footer is where you type in the message*/
 #footer{
       bottom: 0;
+      height: 142px;
       width: 100%;
      float: left;
      background-color: gray;
@@ -57,6 +58,7 @@ p{
 
 .form-group{
   margin-bottom: 20px;
+  height: 100%;
 }
 /*space with the chat messages*/
 
@@ -67,7 +69,7 @@ p{
 }
 #chatContent{
     background-color: #7e8691;
-    height: 95.2vh;
+    height: 85vh;
     overflow-y: scroll;
 
 }
@@ -138,16 +140,96 @@ p{
   padding-left: 13px;
 }
 
+#message{
+  margin: 0;
+  padding: 0.8rem 1.6rem;
+  color: inherit;
+  width: 90%;
+  height: 90%;
+  font-family: inherit;
+  font-size: 2.1rem;
+  font-weight: inherit;
+  line-height: 1.6rem;
+  border: none;
+  border-radius: 0.4rem;
+  transition: box-shadow 300ms;
+}
+
+#messageForm{
+  height: 100%;
+}
+
+.input-sm::placeholder {
+  color: #B0BEC5;
+  font-size: 20px;
+}
+
+.input-sm:focus {
+  outline: none;
+  box-shadow: 0.2rem 0.8rem 1.6rem #4768F3;
+}
+
+#sendMessageButton{
+  margin-left: 8px;
+  padding: 0.8rem 1.6rem;
+  background-color: white;
+  height: 90%;
+  font-family: inherit;
+  font-size: 2.1rem;
+  font-weight: inherit;
+  line-height: 1.6rem;
+  border: none;
+  border-radius: 0.4rem;
+  transition: box-shadow 300ms;
+}
+
+#sendMessageButton:focus {
+  outline: none;
+  box-shadow: 0.2rem 0.8rem 1.6rem #4768F3;
+}
+
 #messageContent{
   font-size: 20px;
   padding-left: 13px;
   padding-right: 13px;
+  overflow-wrap: break-word;
+}
+#newChatButton{
+  display: inline-block;
+  text-decoration: none;
+  background: #4768F3;
+  color: white;
+  width: 70px;
+  height: 70px;
+  line-height: 50px;
+  border-radius: 50%;
+  text-align: center;
+  vertical-align: middle;
+  transition: .4s;
+  font-size: 80px;
+  text-shadow: 2px 2px black;
+  border: none;
+  margin: 10px 0px 20px 10px;
 }
 
+#newChatButton:active{
+  -ms-transform: translateY(2px);
+    -webkit-transform: translateY(2px);
+    transform: translateY(2px);
+}
 #timestamp{
   font-size: 15px;
   padding-right: 7px;
   text-align: right;
+}
+
+.singleChatRoom{
+  height: 40px;
+  background-color: lightgrey;
+}
+
+.singleChatRoom:hover{
+  background-color: white;
 }
 
 .container{
@@ -168,9 +250,6 @@ p{
     to   { opacity: 1; }
 }
 
-.input-sm{
-  width: 80% ;
-}
 
 /*===========users===========*/
 
@@ -178,16 +257,7 @@ p{
   font-size: 40px;
 }
 
-/*#sendMessageButton{
-  border-radius: 28px;
-  box-shadow: 0px 1px 3px #666666;
-  color: #ffffff;
-  font-size: 20px;
-  background: #4768F3;
-  padding: 10px 20px 10px 20px;
-  text-decoration: none;
 
-}*/
 
 #users{
     font-size: 24px;
