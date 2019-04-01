@@ -97,7 +97,7 @@ io.sockets.on('connection', function(socket){
   socket.on('new chat',function(chatData){
     allGroupChats.push(chatData);
     for (let index = 2 ; index < chatData.length; index++){
-       io.to(chatData[index]).emit('create chat', chatData[1]);
+       io.to(chatData[index]).emit('create chat',chatData[0], chatData[1]);
     }
   });
 

@@ -81,6 +81,7 @@ $(function(){
     socket.on('new message', function(data){
       console.log('I received a new message for chat: ' + data.chatID);
       console.log("The message has the content: " + data.msgContent);
+      console.log("received data: " + data);
       if(data.username === username){
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
@@ -160,9 +161,9 @@ $(function(){
       
     });
 
-    socket.on('create chat', function(chatName){
+    socket.on('create chat', function(uniqueChatID,chatName){
       console.log("create chat has been called");
-      allChatsContainer.append('<div class="singleChatRoom" id="' + chatID + '" chatID="' + chatID + '">' + chatName + '</div>');
+      allChatsContainer.append('<div class="singleChatRoom" tabindex= "' + 0 + '" id="' + uniqueChatID + '" chatID="' + chatID + '">' + chatName + '</div>');
       console.log("current temp chatID " + tempChatID);
       allChatsContainer.children().unbind();
       
@@ -193,8 +194,6 @@ $(function(){
     //this function displays the message depending on the currently selected chat group
     function displayMessages(){
       for(var index = 0; index < chatMessages.children().length; index++){
-        console.log("im looping through all the messages");
-        console.log(chatMessages.children().eq(index));
         if(chatMessages.children().eq(index).attr("messageID") == tempChatID || chatMessages.children().eq(index).attr("class") == "userUpdate"){
           chatMessages.children().eq(index).show();
         } else {
