@@ -29,6 +29,9 @@ p{
   overflow-y: scroll;
 }
 
+#chatTitle{
+  height: 30px;
+}
 
 /*===============select members for a new chat============*/
 .selectChatMembers{
@@ -38,7 +41,6 @@ p{
   position: absolute;
   width: 50%;
 }
-
 
 /**==========chat with messages========**/
 
@@ -64,7 +66,7 @@ p{
 }
 #chatContent{
     background-color: #7e8691;
-    height: 85vh;
+    height: 86vh;
     overflow-y: scroll;
 
 }
@@ -219,6 +221,7 @@ p{
 }
 
 .singleChatRoom{
+  display: block;
   height: 100px;
   background-color: white;
   text-align: center;
@@ -227,11 +230,12 @@ p{
 }
 
 .singleChatRoom:focus{
-  background-color: green;
+  font-weight: bold;
+  background-color: #d1d1d1;
 }
 
 .active, .singleChatRoom:hover{
-  background-color: lightgrey;
+  background-color: #F4F5F5;
   height: 100px;
 }
 

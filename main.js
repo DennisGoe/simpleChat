@@ -20,15 +20,16 @@ $(function(){
     var tempChatID = "globalChat";
     var allChatsContainer = $('.allChatsContainer');
     var chatMessages = $('.chatMessages');
+    var chatTitle = $('.chatTitle');
 
     var chatID = "";
-    
+
     var newChatData = [];
 
     //here are the states for continue button. just as booleans
     //these are used for creating a new chat since we want to use the same button mutliple times
     var selectMode = false;
-  
+
     //hide the chat so user has to enter a name first
     var testMode = false;
     if(testMode){
@@ -41,7 +42,7 @@ $(function(){
     }
 
     //here you find all the elements of the DOM that are initially hidden
-  
+
     selectChatMembers.hide();
     continueButton.hide();
     chatName.hide();
@@ -60,7 +61,7 @@ $(function(){
       newChatData = [];
     });
 
-   
+
 
 
     //always auto scrool to bottom of chat
@@ -100,7 +101,7 @@ $(function(){
         console.log(chatMessages.children());
       }
       displayMessages();
-      
+
       });
 
 
@@ -125,25 +126,29 @@ $(function(){
     //the server returns a list with all the users so we can loop through it and display the names
     socket.on('get users', function(data){
       users.children().unbind();
-     
+
       users.html('');
       for ( i = 0; i < data.length; i++){
         users.append('<div class="userNameDiv" username="' +data[i][0] + '" id="' + data[i][1] +  '">' + data[i][0] +'</div>');
       }
-   
+
         users.children().click(function(){
           if(selectMode){
             chosenUsers.append('<div class = "' + this.id + '">' + $(this).attr("username") + '</div>');
             continueButton.show();
             continueButton.off();
             newChatData.push(this.id);
-            
+
             continueButton.click(function(){
                 $('#instructionsForCreatingNewChat').text("Type in a name for the chat");
                 chatName.show();
                 if(chatName.val()){
                  chatID = generateChatID();
                  console.log("chatID: " + chatID);
+
+                 // ==========================================================
+                 chatName.append("chatID: " + chatID);
+                 // ==========================================================
                  newChatData.unshift(chatName.val());
                  newChatData.unshift(chatID);
                  chosenUsers.children().empty();
@@ -153,12 +158,12 @@ $(function(){
                  socket.emit('new chat', newChatData);
                 }
             });
-          }   
-         
-            
-        });   
-     
-      
+          }
+
+
+        });
+
+
     });
 
     socket.on('create chat', function(uniqueChatID,chatName){
@@ -166,16 +171,16 @@ $(function(){
       allChatsContainer.append('<div class="singleChatRoom" tabindex= "' + 0 + '" id="' + uniqueChatID + '" chatID="' + chatID + '">' + chatName + '</div>');
       console.log("current temp chatID " + tempChatID);
       allChatsContainer.children().unbind();
-      
+
       allChatsContainer.children().click(function(){
       tempChatID = this.id;
       console.log("this is the ID of the last clicked chat: " + tempChatID);
       displayMessages();
 
-      
-    
+
+
     });
-    
+
     });
     //recognize disconnection of user
     socket.on('new connection', function(data){
@@ -198,9 +203,9 @@ $(function(){
           chatMessages.children().eq(index).show();
         } else {
           chatMessages.children().eq(index).hide();
-        } 
+        }
 
-        
+
       }
     }
 
