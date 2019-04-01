@@ -40,21 +40,21 @@ io.sockets.on('connection', function(socket){
     console.log("sockets in array: " +  amountConnections[index].id);
   }
   console.log("==================================");
-  
+
 
 
 //once a user disconnects the connection is removed from the list and the list of online users is updated
   socket.on('disconnect', function(e){
- 
+
     users.splice(users.indexOf(socket.username), 1);
     updateUsernames();
-    
+
     io.sockets.emit('disconnect', socket.username);
     //remove connection from list
     amountConnections.splice(amountConnections.indexOf(socket), 1);
     console.log(amountConnections.length + " sockets are connected");
   });
- 
+
   //is triggered once a message is sent. the 'send message' event is getting emitted to the client
   //the callback function sends 'data' --> the messga it self and the username of the sender
   //the client creates a div that contains these data then
@@ -62,6 +62,7 @@ io.sockets.on('connection', function(socket){
     console.log("chatID " + chatID);
     if(chatID =="globalChat"){
       io.sockets.emit('new message',{msgContent: data, username: socket.username,chatID: chatID});
+      console.log(data);
     } else{
       console.log("inside else");
       for (let x = 0; x < allGroupChats.length; x++) {
@@ -71,7 +72,7 @@ io.sockets.on('connection', function(socket){
             io.to(allGroupChats[x][y]).emit('new message',{msgContent: data, username: socket.username,chatID: chatID});
           }
         }
-        
+
       }
     }
   });
@@ -80,7 +81,7 @@ io.sockets.on('connection', function(socket){
   //also we give the socket the username
   //the parameters are function(username, enteredDara is set to true once the user has entered a name)
   socket.on('new user', function(data, enteredData){
-    //declare a single user variable so we can store both the name and the socket id 
+    //declare a single user variable so we can store both the name and the socket id
     //in it for the multicasts
     var singleUser = [];
     console.log("the user: " + data + " has been assigned the ID: "+ socket.id);
