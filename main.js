@@ -24,6 +24,7 @@ $(function(){
 
     var chatID = "";
     var localUser;
+    var localId  = null;
 
     var newChatData = [];
 
@@ -31,24 +32,23 @@ $(function(){
     //these are used for creating a new chat since we want to use the same button mutliple times
     var selectMode = false;
 
-    //hide the chat so user has to enter a name first
-    var testMode = false;
-    if(testMode){
-        loginForm.hide();
-    }else{
-        messageContainer.hide();
-        footer.hide();
-        allChatsWrapper.hide();
-        onlineUsersWrapper.hide();
-    }
+    //hide the chat until the user did login.
+    messageContainer.hide();
+    footer.hide();
+    allChatsWrapper.hide();
+    onlineUsersWrapper.hide();
+
 
     //here you find all the elements of the DOM that are initially hidden
-
+    //They will be activated when certain actions come into effect
     selectChatMembers.hide();
     continueButton.hide();
     chatName.hide();
 
-    //the window for selecting chat members is initially hidden
+    //the window for selecting chat members, when creating a new private chat/ group is initially hidden
+    //preventDefault tells the client that if the event does not get explicitly handled, its default action should not be taken as it normally would be
+    //selectChatMembers.show will show the user that creates the chat, the members he can select
+    //selectMode allows the creator to choose multiple members to add to the chat
     newChat.submit(function(e){
       e.preventDefault();
       selectChatMembers.show();
@@ -59,57 +59,59 @@ $(function(){
       //this array kepps all the data needed for a new group chat
       //in the first index will be the group name and after that come the IDs of the sockets
       //that happens in the section under "get users"
+      //also the user that creates the chat will be pushed as first user into the list
       newChatData = [];
+      newChatData.push(localId);
     });
-
-
-
-
-    //always auto scrool to bottom of chat
-    chatContent.scrollTop = chatContent.scrollHeight;
 
     //is called when the user sends a message
     //first the 'send message' event on the server site is called and the message content is passed on to that
+    //the 'send message' event contains the message content, as well as the chatID of the chat the message should be send to
+    //the 'sendLocalId' event contains the ID of the local user, as we need this information later on
     //then the 'new message' event is emitted by the server and passed to the client
     messageForm.submit(function(e){
       e.preventDefault();
-      console.log("message: " + message.val());
       socket.emit('send message', message.val(), tempChatID);
       message.val('');
+    });
+
+    socket.on('sendLocalId', function(data) {
+      localId = data;
     });
 
     //server emitts the new message
     //the content of that message is wrapped in a div and appended to the chat together with the user name
     socket.on('new message', function(data){
-      console.log('I received a new message for chat: ' + data.chatID);
-      console.log("The message has the content: " + data.msgContent);
-      console.log("received data: " + data);
-      chatTitle.text(data.chatID);
+
+      //Here we check if the send message is from the local User or an outside user that is to the chat connected
+      //This helps us to display the messagesite correct
       if(data.username === localUser){
+        //We also add a timestamp to the send message, and add an '0' if the minute mark ist under 10 minutes.
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
+        //Here we wrap the message with all its content inside a div, which will be later displayed at the chat
         chatMessages.append('<div class ="ownChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
         $('div[messageID="' + data.chatID + '"]').hide();
-        console.log("appending message to chat messages");
-        console.log(chatMessages.children());
      }
       else{
-        console.log("inside else of new message");
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
         chatMessages.append('<div class ="otherChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
+        //This hides the message id, as i shouldnt be seen inside the message
         $('div[messageID="' + data.chatID + '"]').hide();
-        console.log("appending message to chat messages");
-        console.log(chatMessages.children());
       }
-      displayMessages();
+        //This calls the displayMessages function at the bottom of the file, to display all Messages
+        displayMessages();
 
       });
 
 
-    //this is called when the user logs in
-    //the 'new user' event is passed to the server
-    loginForm.submit(function(e){
+      //this is called when the user logs in
+      //the 'new user' event is passed to the server
+      //It contains the given username and boolean which is true if a username was given or fals if none was given
+      //It hides the loginContainer and shows the main chat page.
+      //We also save the local username on the local client
+      loginForm.submit(function(e){
       e.preventDefault();
       socket.emit('new user', username.val(), function(data){
         if(data){
@@ -118,79 +120,88 @@ $(function(){
             footer.show();
             allChatsWrapper.show();
             onlineUsersWrapper.show();
-            //localUser = username.val();
+            localUser = username.val();
         }
       });
-     username.val('');
     });
 
 
     //this is called to show all the users
     //the server returns a list with all the users so we can loop through it and display the names
+    //the children().unbind() call removes a previously attached event handler from the element
     socket.on('get users', function(data){
       users.children().unbind();
 
+      //this creates the div in which the user is displayed, with his username, id and displayed name
       users.html('');
       for ( i = 0; i < data.length; i++){
         users.append('<div class="userNameDiv" username="' +data[i][0] + '" id="' + data[i][1] +  '">' + data[i][0] +'</div>');
       }
 
+        //this calls a clickevent, in which we are able to add a user to a new chat
+        //the selectedMode allows us to repeat the event, so we can add more than one user to our chat
         users.children().click(function(){
           if(selectMode){
-            chosenUsers.append('<div class = "' + this.id + '">' + $(this).attr("username") + '</div>');
-            continueButton.show();
-            continueButton.off();
-            newChatData.push(this.id);
+            for(var i = 0; i< 1; i++) {
+              //this prevents the user to pick himself when he selectes the members of the new chat
+              if(this.id !== newChatData[i]){
+                chosenUsers.append('<div class = "' + this.id + '">' + $(this).attr("username") + '</div>');
+                //Shows the continue button with is click event
+                continueButton.show();
+                //Removes the button at the end of the loop so it wont double itself at a new interval
+                continueButton.off();
+                //saves the chooosen user id to the chat array
+                newChatData.push(this.id);
+                break;
+              }
+            }
 
+            //this clickevent allows to enter the name of the new chat and also displays the picked users
             continueButton.click(function(){
                 $('#instructionsForCreatingNewChat').text("Type in a name for the chat");
                 chatName.show();
+                //When the chat gets his name, he will be given an unique ID
                 if(chatName.val()){
                  chatID = generateChatID();
-                 console.log("chatID: " + chatID);
-
-                 // ==========================================================
-                 //  chatTitle.text(chatName.val());
-                 // ==========================================================
-
+                 //The name and the new ID will be shifted at the front of the dataArray, the new chat has.
                  newChatData.unshift(chatName.val());
                  newChatData.unshift(chatID);
+                 //Removes the users fromt the selection to prevent doubling when another cheat is created
                  chosenUsers.children().empty();
                  selectChatMembers.hide();
                  chatName.val('');
-                 console.log("new chat data array " + newChatData);
                  socket.emit('new chat', newChatData);
                 }
             });
           }
-
-
         });
-
-
     });
 
+    //this is called when a new chat is created
+    //the server returns the uniqueChatID and the chat name of the new chat
     socket.on('create chat', function(uniqueChatID,chatName){
-      console.log("create chat has been called");
+      //the new chat will be appended to the parentdiv and get their own div
+      //in which the tabindex, uniqueChatID, chatID and their name is displayed
       allChatsContainer.append('<div class="singleChatRoom" tabindex= "' + 0 + '" id="' + uniqueChatID + '" chatID="' + chatID + '">' + chatName + '</div>');
-      console.log("current temp chatID " + tempChatID);
+      //the children().unbind() call removes a previously attached event handler from the element
       allChatsContainer.children().unbind();
-
+      //this calls a clickevent, which chooses the chat in which the user will send his message
       allChatsContainer.children().click(function(){
+      //the chat ID is saved in a client variable
       tempChatID = this.id;
-      console.log("this is the ID of the last clicked chat: " + tempChatID);
+      //this changes the chat title to the last recent clicked chat, which will also be the chat the user is typing in
+      chatTitle.text($(this).text());
+      //calls the displayMeessages function
       displayMessages();
-
-
-
+      });
     });
-
-    });
-    //recognize disconnection of user
+    //recognizes connection of a new user and notices all users about it
+    //the given data contains the users name
     socket.on('new connection', function(data){
       chatMessages.append('<div class="userUpdate">' + data + " has joined the chat" +'</div>');
     });
-    //recognize disconnection of user
+    //recognizes disconnection of a new user and notices all users about it
+    //the given data contains the users name
     socket.on('disconnect', function(data){
      chatMessages.append('<div class="userUpdate">' + data + " has left the chat" +'</div>');
     });
@@ -208,9 +219,6 @@ $(function(){
         } else {
           chatMessages.children().eq(index).hide();
         }
-
-
       }
     }
-
-    });//end of big function ALWAYS NEEDS TO BE HERE!
+  });//end of big function ALWAYS NEEDS TO BE HERE!

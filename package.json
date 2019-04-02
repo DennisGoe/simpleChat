@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "a simple chat app with socket.io",
   "main": "index.js",
- 
+
   "author": "Dennis Göricke, Filip Stanicak",
   "license": "ISC",
   "dependencies": {
@@ -12,7 +12,7 @@
     "socketio-file-upload": "^0.7.0"
   },
   "scripts": {
-    "start" : "index.js"
+    "start" : "node index.js"
   }
- 
+
 }

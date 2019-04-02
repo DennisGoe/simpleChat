@@ -5,23 +5,20 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var port = 3000;
-//contains all online users
+//array that contains all online users
 users = [];
-//responsible for connected sockets
+//array that is responsible for connected sockets
 amountConnections = [];
-
-//all group chats
+//array that contains all group chats
 allGroupChats = [];
 
 
 
 //server listens on port 3000
 server.listen(port);
-console.log('Server running on port:  ' + port);
 
 //use static files like additional javascript files or css files linked in the html file
 app.use(express.static('./'));
-
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/' + 'index.html');
 });
@@ -34,12 +31,12 @@ app.get('/', function(req, res){
 //the connection is then pushed to the 'amountConnections' array and is stored until user disconnects
 io.sockets.on('connection', function(socket){
   amountConnections.push(socket);
-
-
+  //this sends a singleCast to the new connected user, so he can store his own socket id
+  io.to(socket.id).emit('sendLocalId', socket.id);
 
 //once a user disconnects the connection is removed from the list and the list of online users is updated
   socket.on('disconnect', function(e){
-
+    //removes the user
     users.splice(users.indexOf(socket.username), 1);
     updateUsernames();
 
@@ -52,24 +49,19 @@ io.sockets.on('connection', function(socket){
   //the callback function sends 'data' --> the messga it self and the username of the sender
   //the client creates a div that contains these data then
   socket.on('send message', function(data, chatID){
-    console.log("chatID " + chatID);
+    //Every user is getting the global chat message
     if(chatID === "globalChat"){
       io.sockets.emit('new message',{msgContent: data, username: socket.username,chatID: chatID});
-      console.log(data);
-    } else{
-      console.log("inside else");
+    //iterates threw all chats on the server and checks if a user is inside the chat, so he will get the message inside that specific chat
+    } else {
       for (let x = 0; x < allGroupChats.length; x++) {
-        console.log("all members of grup chat: " + allGroupChats[x]);
-        console.log("amount of groups: " + allGroupChats.length);
-        console.log("all chat IDs: " + allGroupChats[x][0]);
         if(allGroupChats[x][0] === chatID){
-
+          //The first two indexes are reserved for chat id and name, so the first user is displayed at the second index
           for (let y = 2; y < allGroupChats[x].length; y++) {
-
+            //Emits the message to all users in the specific chat
             io.to(allGroupChats[x][y]).emit('new message',{msgContent: data, username: socket.username,chatID: chatID});
           }
         }
-
       }
     }
   });
@@ -81,15 +73,19 @@ io.sockets.on('connection', function(socket){
     //declare a single user variable so we can store both the name and the socket id
     //in it for the multicasts
     var singleUser = [];
+    //if a user did not chose a name he will recive User*randomNumber*
     if(data === ''){
         data = "User" + (Math.floor(Math.random() * (+999999 - +100)) + +100);
     }
     enteredData(true);
     socket.username = data;
+    //Sets the variables in the array for the mulitcasts
     singleUser[0] = data;
     singleUser[1] = amountConnections[amountConnections.length - 1].id;
+    //Adds the user to the server list
     users.push(singleUser);
     updateUsernames();
+    //Multicasts the new connections with the socket name to all users
     io.sockets.emit('new connection', socket.username);
   });
 
@@ -106,10 +102,6 @@ io.sockets.on('connection', function(socket){
 
   //updates the list of user. Returns the current list of users to the client.
   function updateUsernames(){
-
     io.sockets.emit('get users', users);
   }
-
-
-
 });
