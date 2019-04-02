@@ -34,7 +34,7 @@ app.get('/', function(req, res){
 //the connection is then pushed to the 'amountConnections' array and is stored until user disconnects
 io.sockets.on('connection', function(socket){
   amountConnections.push(socket);
-  
+
 
 
 //once a user disconnects the connection is removed from the list and the list of online users is updated
@@ -63,7 +63,7 @@ io.sockets.on('connection', function(socket){
         console.log("amount of groups: " + allGroupChats.length);
         console.log("all chat IDs: " + allGroupChats[x][0]);
         if(allGroupChats[x][0] === chatID){
-          
+
           for (let y = 2; y < allGroupChats[x].length; y++) {
 
             io.to(allGroupChats[x][y]).emit('new message',{msgContent: data, username: socket.username,chatID: chatID});
@@ -81,6 +81,9 @@ io.sockets.on('connection', function(socket){
     //declare a single user variable so we can store both the name and the socket id
     //in it for the multicasts
     var singleUser = [];
+    if(data === ''){
+        data = "User" + (Math.floor(Math.random() * (+999999 - +100)) + +100);
+    }
     enteredData(true);
     socket.username = data;
     singleUser[0] = data;

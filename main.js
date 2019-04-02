@@ -83,6 +83,7 @@ $(function(){
       console.log('I received a new message for chat: ' + data.chatID);
       console.log("The message has the content: " + data.msgContent);
       console.log("received data: " + data);
+      chatTitle.text(data.chatID);
       if(data.username === username){
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
@@ -147,8 +148,9 @@ $(function(){
                  console.log("chatID: " + chatID);
 
                  // ==========================================================
-                 chatName.append("chatID: " + chatID);
+                 //  chatTitle.text(chatName.val());
                  // ==========================================================
+
                  newChatData.unshift(chatName.val());
                  newChatData.unshift(chatID);
                  chosenUsers.children().empty();
