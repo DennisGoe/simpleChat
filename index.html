@@ -52,12 +52,6 @@
               <div class="chatTitle"></div>
             </div>
             <!--only shows when you click the new chat button-->
-            <div class="selectChatMembers">
-              <h3 id="instructionsForCreatingNewChat"></h3>
-              <input type ="text" id="chatName" placeholder="chat name...">
-              <div class="chosenUsers"></div>
-              <input type="button" value="Continue" id="continueButton">
-            </div>
             <div class="chatMessages"></div>
         </div>
       <!--footer = line where you type the message in-->
@@ -80,6 +74,12 @@
     <form id="newChat">
       <input type="submit" id="newChatButton" value="+">
     </form>
+    <div class="selectChatMembers">
+      <h3 id="instructionsForCreatingNewChat"></h3>
+      <input type ="text" id="chatName" placeholder="chat name...">
+      <div class="chosenUsers"></div>
+      <input type="button" value="Continue" id="continueButton">
+    </div>
     <div class="allChatsContainer">
     <div class="singleChatRoom" tabindex="0" id="globalChat">Global Chat</div>
   </div>

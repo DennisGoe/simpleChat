@@ -36,12 +36,24 @@ p{
 /*===============select members for a new chat============*/
 .selectChatMembers{
   z-index: 10;
-  background-color: yellow;
+  background-color: grey;
   text-align: center;
   position: absolute;
-  width: 50%;
+  width: 32%;
+  height: auto;
 }
 
+#continueButton{
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+#instructionsForCreatingNewChat{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
 /**==========chat with messages========**/
 
 /**footer is where you type in the message*/
@@ -222,21 +234,26 @@ p{
 
 .singleChatRoom{
   display: block;
-  height: 100px;
+  min-height: 100px;
+  height: auto;
   background-color: white;
   text-align: center;
   font-size: 40px;
   border-bottom: 2px solid lightgrey;
+  padding: 20px 10px 20px 10px;
 }
 
 .singleChatRoom:focus{
   font-weight: bold;
   background-color: #d1d1d1;
+  min-height: 100px;
+  height: auto;
 }
 
 .active, .singleChatRoom:hover{
   background-color: #F4F5F5;
-  height: 100px;
+  min-height: 100px;
+  height: auto;
 }
 
 .container{
