@@ -177,6 +177,7 @@ $(function(){
       allChatsContainer.children().click(function(){
       tempChatID = this.id;
       console.log("this is the ID of the last clicked chat: " + tempChatID);
+      chatTitle.text(this.text());
       displayMessages();
 
 
