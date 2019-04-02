@@ -59,7 +59,7 @@ p{
 /**footer is where you type in the message*/
 #footer{
       bottom: 0;
-      height: 142px;
+      height: 140px;
       width: 100%;
      float: left;
      background-color: gray;
@@ -67,7 +67,7 @@ p{
 
 .form-group{
   margin-bottom: 20px;
-  height: 100%;
+  height: 90%;
 }
 /*space with the chat messages*/
 
@@ -92,11 +92,11 @@ p{
 
 .ownChatMessage{
     padding : 5px;
-    color: white;
+    color: black;
     font-size: 20px;
     border-bottom: 1px solid lightgrey;
     width: 45vh;
-    margin-right: 30px;
+    margin-left: 485px;
     position: relative;
     background: white;
 	  border-radius: .4em;
@@ -150,10 +150,10 @@ p{
 }
 
 #message{
-  margin: 0;
+  margin-bottom: 20px;
   padding: 0.8rem 1.6rem;
   color: inherit;
-  width: 90%;
+  width: 100%;
   height: 90%;
   font-family: inherit;
   font-size: 2.1rem;
@@ -309,6 +309,16 @@ p{
     padding: 5px;
     height: 40px;
     margin-bottom: 10px;
+}
+
+.userNameDiv:hover{
+    list-style: none;
+    padding: 10px;
+    border-bottom: 1px solid white;
+    padding: 5px;
+    height: 40px;
+    margin-bottom: 10px;
+    background-color: #607df7;
 }
 
 .line{

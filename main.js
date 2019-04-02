@@ -23,6 +23,7 @@ $(function(){
     var chatTitle = $('.chatTitle');
 
     var chatID = "";
+    var localUser;
 
     var newChatData = [];
 
@@ -84,7 +85,7 @@ $(function(){
       console.log("The message has the content: " + data.msgContent);
       console.log("received data: " + data);
       chatTitle.text(data.chatID);
-      if(data.username === username){
+      if(data.username === localUser){
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
         chatMessages.append('<div class ="ownChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
@@ -117,9 +118,10 @@ $(function(){
             footer.show();
             allChatsWrapper.show();
             onlineUsersWrapper.show();
+            //localUser = username.val();
         }
       });
-      username.val('');
+     username.val('');
     });
 
 
@@ -177,7 +179,6 @@ $(function(){
       allChatsContainer.children().click(function(){
       tempChatID = this.id;
       console.log("this is the ID of the last clicked chat: " + tempChatID);
-      chatTitle.text(this.text());
       displayMessages();
 
 
