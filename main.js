@@ -142,8 +142,8 @@ $(function(){
         //the selectedMode allows us to repeat the event, so we can add more than one user to our chat
         users.children().click(function(){
           if(selectMode){
+            //this prevents the user to pick himself when he selectes the members of the new chat
             for(var i = 0; i< 1; i++) {
-              //this prevents the user to pick himself when he selectes the members of the new chat
               if(this.id !== newChatData[i]){
                 chosenUsers.append('<div class = "' + this.id + '">' + $(this).attr("username") + '</div>');
                 //Shows the continue button with is click event
