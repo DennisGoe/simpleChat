@@ -135,8 +135,12 @@ $(function(){
       //this creates the div in which the user is displayed, with his username, id and displayed name
       users.html('');
       for ( i = 0; i < data.length; i++){
+        if(data[i][1] === localId){
+          users.append('<div class="userNameDivMe" username="' +data[i][0] + '" id="' + data[i][1] +  '">' + data[i][0] +'</div>');
+        } else {
         users.append('<div class="userNameDiv" username="' +data[i][0] + '" id="' + data[i][1] +  '">' + data[i][0] +'</div>');
       }
+    }
 
         //this calls a clickevent, in which we are able to add a user to a new chat
         //the selectedMode allows us to repeat the event, so we can add more than one user to our chat
