@@ -4,7 +4,7 @@ var app = express();
 //create server
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
-var port = 3000;
+let port = process.env.PORT || 3000;
 //array that contains all online users
 users = [];
 //array that is responsible for connected sockets
@@ -16,7 +16,7 @@ allGroupChats = [];
 
 //server listens on port 3000
 server.listen(port);
-
+console.log("listening port " + port);
 //use static files like additional javascript files or css files linked in the html file
 app.use(express.static('./'));
 app.get('/', function(req, res){
