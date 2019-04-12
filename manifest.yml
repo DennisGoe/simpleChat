@@ -1,0 +1,5 @@
+---
+applications:
+- name: dynamic-duo
+  memory: 512M
+  instances: 1

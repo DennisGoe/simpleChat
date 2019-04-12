@@ -1,1 +1,3 @@
 # simpleChat
+API KEY:
+Num1sNEb71LblUgUlDCbGUvdLZ08DQmQCrRvNChpyUEB
