@@ -4,6 +4,7 @@ body{
     background-color: #33353a;
     overflow:hidden;
     font-family: "Trebuchet MS";
+  
 }
 p{
   margin:0;
@@ -13,7 +14,9 @@ p{
     color: white;
     margin-top: 15px;
 }
-
+#loginFormContainer{
+  flex: 0;
+}
 
 
 /*=================All chat administration===============*/
@@ -27,6 +30,8 @@ p{
 
 .allChatsWrapper{
   overflow-y: scroll;
+  flex: 1;
+  
 }
 
 #chatTitle{
@@ -71,6 +76,7 @@ p{
   height: 90%;
 }
 /*space with the chat messages*/
+
 
 .col-md-8{
   padding: 0;
@@ -163,6 +169,11 @@ p{
   border: none;
   border-radius: 0.4rem;
   transition: box-shadow 300ms;
+}
+
+#mood{
+  background-color: orange;
+  font-size: 15px;
 }
 
 #messageForm{
@@ -301,6 +312,7 @@ p{
     background-color: #4768F3;
     color: white;
     overflow-y: scroll;
+    flex: 2;
 }
 
 .userNameDiv{

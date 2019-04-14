@@ -3,22 +3,21 @@
   "version": "1.0.0",
   "description": "a simple chat app with socket.io",
   "main": "index.js",
-
   "author": "Dennis Göricke, Filip Stanicak",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.2",
-    "socket.io": "^2.2.0",
-    "socketio-file-upload": "^0.7.0",
-    "cfenv": "1.2.2",
-    "watson-developer-cloud": "^4.0.1",
     "body-parser": "^1.18.3",
+    "cfenv": "1.2.2",
     "dotenv": "^7.0.0",
     "eslint": "^5.15.3",
-    "eslint-config-loopback": "^13.0.0"
+    "eslint-config-loopback": "^13.0.0",
+    "express": "^4.15.2",
+    "node-fetch": "^2.3.0",
+    "socket.io": "^2.2.0",
+    "socketio-file-upload": "^0.7.0",
+    "watson-developer-cloud": "^4.0.1"
   },
   "scripts": {
-    "start" : "node index.js"
+    "start": "node index.js"
   }
-
 }

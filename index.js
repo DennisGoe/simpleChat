@@ -12,8 +12,10 @@ amountConnections = [];
 //array that contains all group chats
 allGroupChats = [];
 
+const fetch = require("node-fetch");
+const bodyParser = require('body-parser');
 
-
+var mood ="";
 //server listens on port 3000
 server.listen(port);
 console.log("listening port " + port);
@@ -30,6 +32,7 @@ app.get('/', function(req, res){
 //is triggered once a sockets connects
 //the connection is then pushed to the 'amountConnections' array and is stored until user disconnects
 io.sockets.on('connection', function(socket){
+  
   amountConnections.push(socket);
   //this sends a singleCast to the new connected user, so he can store his own socket id
   io.to(socket.id).emit('sendLocalId', socket.id);
@@ -49,9 +52,17 @@ io.sockets.on('connection', function(socket){
   //the callback function sends 'data' --> the messga it self and the username of the sender
   //the client creates a div that contains these data then
   socket.on('send message', function(data, chatID){
-    //Every user is getting the global chat message
+     getTone(data);  
+
+     const sleep = (milliseconds) => {
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+
+    sleep(700).then(() => {
+      console.log("the mood in send message is: " + mood);
+      //Every user is getting the global chat message
     if(chatID === "globalChat"){
-      io.sockets.emit('new message',{msgContent: data, username: socket.username,chatID: chatID});
+      io.sockets.emit('new message',{msgContent: data, username: socket.username,chatID: chatID, mood: mood});
     //iterates threw all chats on the server and checks if a user is inside the chat, so he will get the message inside that specific chat
     } else {
       for (let x = 0; x < allGroupChats.length; x++) {
@@ -59,11 +70,15 @@ io.sockets.on('connection', function(socket){
           //The first two indexes are reserved for chat id and name, so the first user is displayed at the second index
           for (let y = 2; y < allGroupChats[x].length; y++) {
             //Emits the message to all users in the specific chat
-            io.to(allGroupChats[x][y]).emit('new message',{msgContent: data, username: socket.username,chatID: chatID});
+            io.to(allGroupChats[x][y]).emit('new message',{msgContent: data, username: socket.username,chatID: chatID, mood: mood});
           }
         }
       }
     }
+    })
+    
+
+    
   });
 
   //is triggered once the user logs into the system. it pushes the user to the list and updates the list of online users in the frontend
@@ -103,5 +118,37 @@ io.sockets.on('connection', function(socket){
   //updates the list of user. Returns the current list of users to the client.
   function updateUsernames(){
     io.sockets.emit('get users', users);
+  }
+
+  function getTone(message){
+    console.log("get tone is called");
+    fetch("https://ecstatic-booth.eu-de.mybluemix.net/tone", {
+      method: "POST",
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'mode': 'cors'
+      },
+      body: JSON.stringify({
+         texts: [message, message]
+      })
+      
+  })
+  
+  .then((response) => {
+      var contentType = response.headers.get("content-type");
+      if(contentType && contentType.includes("application/json")) {
+         return response.json();
+      }
+      throw new TypeError("Oops, we haven't got JSON!");
+  })
+  .then((response) => { 
+      console.log("response:" +  JSON.stringify(response));
+      if (response.mood) {
+        mood = response.mood;
+        console.log("author is in this mood: " + response.mood);
+        return  mood;
+      }
+  })
   }
 });
