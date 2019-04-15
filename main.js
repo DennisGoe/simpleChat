@@ -96,7 +96,7 @@ $(function(){
       else{
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
-        chatMessages.append('<div class ="otherChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="timestamp">' + time + '</p>');
+        chatMessages.append('<div class ="otherChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent + '</p>' + '<p id="mood"> Mood: ' + data.mood + '<p id="timestamp">' + time + '</p>');
         //This hides the message id, as i shouldnt be seen inside the message
         $('div[messageID="' + data.chatID + '"]').hide();
       }
