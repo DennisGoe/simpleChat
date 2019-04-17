@@ -4,7 +4,7 @@ body{
     background-color: #33353a;
     overflow:hidden;
     font-family: "Trebuchet MS";
-  
+
 }
 p{
   margin:0;
@@ -31,7 +31,7 @@ p{
 .allChatsWrapper{
   overflow-y: scroll;
   flex: 1;
-  
+
 }
 
 #chatTitle{
@@ -172,8 +172,9 @@ p{
 }
 
 #mood{
-  background-color: orange;
+  font-style: italic;
   font-size: 15px;
+  padding-left: 13px;
 }
 
 #messageForm{
