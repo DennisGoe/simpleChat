@@ -25,11 +25,23 @@
     <div id="loginFormContainer" class="row">
       <div class="col-md-12">
           <form id="loginForm">
-              <div class="form-group">
-                <label>Enter Username</label>
-                <input class="form-control" id="username">
-                </br>
-                <input type="submit" class ="btn btn-primary" value="Login"/>
+              <div class="form-group" id="loginContainer">
+                    <div class="login">
+                        <label>Already have an account?</label>
+                        <input type="text" class="form-control" id="username" placeholder="Username...">
+                        <input type="password" class="form-control" id="password" placeholder="Password...">
+                        </br>
+                        <input type="submit" class ="btn btn-primary" value="Login"/>
+                    </div>
+                    
+                    <div class="newAccount">
+                        <label>Want to create a new account?</label>
+                        <input class="form-control" id="newUsername" placeholder="Username...">
+                        <input class="form-control" id="newPassword" placeholder="Password...">
+                        </br>
+                        <input type="button" id="newAccountButton" class ="btn btn-primary" value="Create new account"/>
+                    </div>
+                    
               </div>
 
             </form>

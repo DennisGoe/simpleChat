@@ -8,7 +8,12 @@ $(function(){
     var loginFormContainer = $('#loginFormContainer')
     var loginForm = $('#loginForm');
     var users = $('#users');
+
     var username = $('#username');
+    var password = $('#password');
+    var newUsername = $('#newUsername');
+    var newPassword = $('#newPassword');
+
     var footer= $('#footer');
     var selectChatMembers = $('.selectChatMembers');
     var allChatsWrapper = $('.allChatsWrapper');
@@ -21,6 +26,8 @@ $(function(){
     var allChatsContainer = $('.allChatsContainer');
     var chatMessages = $('.chatMessages');
     var chatTitle = $('.chatTitle');
+    var newAccountButton = $('#newAccountButton');
+
 
     var chatID = "";
     var localUser;
@@ -106,14 +113,15 @@ $(function(){
       });
 
 
-      //this is called when the user logs in
-      //the 'new user' event is passed to the server
+      //this is called when the user logs in with an existing account
+      //the 'login' event is passed to the server
       //It contains the given username and boolean which is true if a username was given or fals if none was given
       //It hides the loginContainer and shows the main chat page.
       //We also save the local username on the local client
       loginForm.submit(function(e){
       e.preventDefault();
-      socket.emit('new user', username.val(), function(data){
+      console.log("trigger emit login");
+      socket.emit('login', username.val(),password.val(), function(data){
         if(data){
             loginFormContainer.hide();
             messageContainer.show();
@@ -121,10 +129,27 @@ $(function(){
             allChatsWrapper.show();
             onlineUsersWrapper.show();
             localUser = username.val();
+        } else {
+          alert("wrong username or password");
         }
       });
     });
 
+    //this is called when a user creates a new account
+    newAccountButton.click(function(){
+      socket.emit("new account", newUsername.val(), newPassword.val(), function(data){
+            if(data){
+              loginFormContainer.hide();
+              messageContainer.show();
+              footer.show();
+              allChatsWrapper.show();
+              onlineUsersWrapper.show();
+              localUser = username.val();
+            } else {
+              alert("empty field");
+            }
+      });
+    });
 
     //this is called to show all the users
     //the server returns a list with all the users so we can loop through it and display the names

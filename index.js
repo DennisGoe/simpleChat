@@ -5,6 +5,12 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 let port = process.env.PORT || 3000;
+console.log("before request is created");
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+var request = new XMLHttpRequest();
+var tokenString ="";
+
+
 //array that contains all online users
 users = [];
 //array that is responsible for connected sockets
@@ -13,20 +19,41 @@ amountConnections = [];
 allGroupChats = [];
 
 const fetch = require("node-fetch");
-const bodyParser = require('body-parser');
+//const bodyParser = require('body-parser');
 
 var mood ="";
+var loginSuccess = false;
+var createdAccount = false;
+
+
+
+
+
+
+
 //server listens on port 3000
 server.listen(port);
 console.log("listening port " + port);
+
 //use static files like additional javascript files or css files linked in the html file
 app.use(express.static('./'));
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/' + 'index.html');
 });
+//===================DO NOT TOUCH!!=================
+
+console.log("calling to get token");
+getToken();
+
+// const sleep = (milliseconds) => {
+//   return new Promise(resolve => setTimeout(resolve, milliseconds))
+// }
+// sleep(3000).then(() => {
+//   sendTestSSQL();
+// });
 
 
-
+//====================================================
 
 
 //is triggered once a sockets connects
@@ -53,7 +80,6 @@ io.sockets.on('connection', function(socket){
   //the client creates a div that contains these data then
   socket.on('send message', function(data, chatID){
      getTone(data);  
-
      const sleep = (milliseconds) => {
       return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
@@ -84,25 +110,71 @@ io.sockets.on('connection', function(socket){
   //is triggered once the user logs into the system. it pushes the user to the list and updates the list of online users in the frontend
   //also we give the socket the username
   //the parameters are function(username, enteredDara is set to true once the user has entered a name)
-  socket.on('new user', function(data, enteredData){
+  socket.on('login', function(username,password, enteredData){
     //declare a single user variable so we can store both the name and the socket id
     //in it for the multicasts
-    var singleUser = [];
-    //if a user did not chose a name he will recive User*randomNumber*
-    if(data === ''){
-        data = "User" + (Math.floor(Math.random() * (+999999 - +100)) + +100);
+    console.log("login has been called");
+    if(username != "" && password !=""){
+      console.log("calling checkLogin");
+      checkLoginData(username,password,function(){
+        if(loginSuccess){
+          var singleUser = [];
+          enteredData(true);
+          socket.username = username;
+          //Sets the variables in the array for the mulitcasts
+          singleUser[0] = username;
+          singleUser[1] = amountConnections[amountConnections.length - 1].id;
+          //Adds the user to the server list
+          users.push(singleUser);
+          updateUsernames();
+          //Multicasts the new connections with the socket name to all users
+          io.sockets.emit('new connection', socket.username);
+          loginSuccess = false;
+        }else{
+          enteredData(false);
+          loginSuccess = false;
+        } //end of login success else
+
+      }); //end of checkLogin callback   
+    } else{
+      enteredData(false);
+      loginSuccess = false;
+    } //end of empty input field else
+      
+  });//end of socket.on 'login'
+
+  //is triggered when user creates a new account
+  socket.on('new account', function(newUsername, newPassword,enteredData){
+
+    if(newUsername != "" && newPassword != ""){
+      createNewUser(newUsername,newPassword,function(){
+        if(createdAccount){
+          var singleUser = [];
+          enteredData(true);
+          socket.username = username;
+          //Sets the variables in the array for the mulitcasts
+          singleUser[0] = username;
+          singleUser[1] = amountConnections[amountConnections.length - 1].id;
+          //Adds the user to the server list
+          users.push(singleUser);
+          updateUsernames();
+          //Multicasts the new connections with the socket name to all users
+          io.sockets.emit('new connection', socket.username);
+          createdAccount = false;
+        }else{
+          enteredData(false);
+          createdAccount = false;
+        } //end of login success else
+
+      }); //end of checkLogin callback 
+    } else {
+      enteredData(false);
+      createdAccount = false;
     }
-    enteredData(true);
-    socket.username = data;
-    //Sets the variables in the array for the mulitcasts
-    singleUser[0] = data;
-    singleUser[1] = amountConnections[amountConnections.length - 1].id;
-    //Adds the user to the server list
-    users.push(singleUser);
-    updateUsernames();
-    //Multicasts the new connections with the socket name to all users
-    io.sockets.emit('new connection', socket.username);
-  });
+  })
+
+
+
 
   //is called when a new chat is created by a user
   //CAUTION!: index = 0 is for the individual chatID
@@ -152,3 +224,134 @@ io.sockets.on('connection', function(socket){
   })
   }
 });
+
+//=============================DO NOT TOUCH!!======================
+function getToken(){
+  console.log('inside get token');
+  // var request = new XMLHttpRequest();
+  request.open('POST','https://dashdb-entry-fra-fra02-01.services.eu-de.bluemix.net/dashdb-api/v2/auth', true);
+  request.setRequestHeader("Content-type", "application/json");
+  var data = JSON.stringify({"userid":"dash100604", "password":"y_GpBLH_f7u1"});
+  request.send(data);
+  
+    request.onload = function(){
+    
+      if(request.readyState === 4 ){
+        if(request.status === 400){
+          var json = JSON.parse(request.responseText);
+          console.log(json);
+        }
+        if(request.status === 200){
+          let tokenObject = JSON.parse("[" + request.responseText + "]");
+          tokenString = tokenObject[0].token;
+          passToken(tokenString);
+          
+        }
+      }
+      
+    }
+}
+//===============================================================
+
+
+//need this as helper function to set the global variable, because i couldnt access the variable from inside the anonymous function inside getToken()
+function passToken(passedToken){
+  console.log("Inside pass token");
+  tokenString = passedToken;
+}
+
+
+function checkLoginData(username,password,callback){
+  console.log("check login was called");
+  var request = new XMLHttpRequest();
+  request.open('POST','https://dashdb-entry-fra-fra02-01.services.eu-de.bluemix.net/dashdb-api/v2/sql_query_export',true);
+
+  request.setRequestHeader("Content-type", "application/json");
+  request.setRequestHeader('Authorization', 'Bearer ' + tokenString);
+
+  var data = JSON.stringify({"command" : "SELECT * FROM LOGIN WHERE USERNAME='" + username + "' AND PASSWORD ='" + password + "'"});
+
+  request.send(data);
+  
+  console.log("state of login request: " + request);
+  //onload 
+  request.onload = function(){
+    console.log("inside onload of testSQL");
+    if(request.readyState === 4 ){
+      if(request.status === 400){
+        var json = JSON.parse(request.responseText);
+        console.log(json);
+      }
+      if(request.status === 200){
+        var loginData = request.responseText;
+        
+        if(loginData ===""){
+          console.log("login failed");
+          setLoginSuccess(false);
+          callback();
+        }
+        else{
+          console.log("LOGIN DATA: " + loginData);
+          setLoginSuccess(true);
+          callback();
+        }
+        
+      }
+    }
+    
+  }
+ 
+}
+
+function setLoginSuccess(success){
+  loginSuccess = success;
+}
+
+
+function createNewUser(newUsername,newPassword,callback){
+
+  // var createRequest = new XMLHttpRequest();
+  request.open('POST','https://dashdb-entry-fra-fra02-01.services.eu-de.bluemix.net/dashdb-api/v2/sql_jobs',true);
+
+  request.setRequestHeader("Content-type", "application/json");
+  request.setRequestHeader('Authorization', 'Bearer ' + tokenString);
+
+  var data = JSON.stringify({"commands" : "INSERT INTO LOGIN VALUES(" + newUsername + "," + newPassword + ");",
+                             "separator" : ";",
+                             "stop_on_error" : "no"});
+
+  request.send(data);
+  console.log(request);
+  
+
+  //onload 
+  request.onload = function(){
+    console.log("inside onload of create");
+    console.log(request);
+    if(request.readyState === 4 ){
+      if(request.status === 400){
+        console.log("SOMEHOW NOT AVAILABLE");
+      }
+      if(request.status === 200){
+        var createRequest = JSON.parse(request.responseText);
+        
+        if(createRequest.commands_count === 1){
+          console.log("login failed");
+          setCreateAccount(false);
+          callback();
+        }
+        else{
+          console.log("NEW DATA: " + createRequest);
+          setCreateAccount(true);
+          callback();
+        }
+        
+      }
+    }
+    
+  }
+}
+
+function setCreateAccount(success){
+  createNewUser = success;
+}

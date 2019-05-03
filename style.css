@@ -151,10 +151,7 @@ p{
 	margin-top: -26px;
 	margin-left: -26px;
 }
-#username{
-  font-size: 25px;
-  padding-left: 13px;
-}
+
 
 #message{
   margin-bottom: 20px;
@@ -355,3 +352,21 @@ p{
   display: none;
   width: 10px;
 }
+
+
+/**==================LOGIN===========**/
+#username, #password{
+  font-size: 18px;
+  padding-left: 13px;
+  width: 100%;
+  padding: 10px;
+  margin: 5px;
+}
+
+.login, .newAccount{
+  float: left;
+  width: 10%;
+  text-align: center;
+  margin-left:60px;
+}
+
