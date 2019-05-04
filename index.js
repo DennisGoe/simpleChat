@@ -21,6 +21,7 @@ allGroupChats = [];
 const fetch = require("node-fetch");
 //const bodyParser = require('body-parser');
 
+var translation ="";
 var mood ="";
 var loginSuccess = false;
 var createdAccount = false;
@@ -59,7 +60,7 @@ getToken();
 //is triggered once a sockets connects
 //the connection is then pushed to the 'amountConnections' array and is stored until user disconnects
 io.sockets.on('connection', function(socket){
-  
+
   amountConnections.push(socket);
   //this sends a singleCast to the new connected user, so he can store his own socket id
   io.to(socket.id).emit('sendLocalId', socket.id);
@@ -79,7 +80,8 @@ io.sockets.on('connection', function(socket){
   //the callback function sends 'data' --> the messga it self and the username of the sender
   //the client creates a div that contains these data then
   socket.on('send message', function(data, chatID){
-     getTone(data);  
+     getTranslation(data);
+     getTone(data);
      const sleep = (milliseconds) => {
       return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
@@ -88,7 +90,7 @@ io.sockets.on('connection', function(socket){
       console.log("the mood in send message is: " + mood);
       //Every user is getting the global chat message
     if(chatID === "globalChat"){
-      io.sockets.emit('new message',{msgContent: data, username: socket.username,chatID: chatID, mood: mood});
+      io.sockets.emit('new message',{msgContent: data, username: socket.username,chatID: chatID, mood: mood, translation: translation});
     //iterates threw all chats on the server and checks if a user is inside the chat, so he will get the message inside that specific chat
     } else {
       for (let x = 0; x < allGroupChats.length; x++) {
@@ -96,15 +98,15 @@ io.sockets.on('connection', function(socket){
           //The first two indexes are reserved for chat id and name, so the first user is displayed at the second index
           for (let y = 2; y < allGroupChats[x].length; y++) {
             //Emits the message to all users in the specific chat
-            io.to(allGroupChats[x][y]).emit('new message',{msgContent: data, username: socket.username,chatID: chatID, mood: mood});
+            io.to(allGroupChats[x][y]).emit('new message',{msgContent: data, username: socket.username,chatID: chatID, mood: mood, translation: translation});
           }
         }
       }
     }
     })
-    
 
-    
+
+
   });
 
   //is triggered once the user logs into the system. it pushes the user to the list and updates the list of online users in the frontend
@@ -135,12 +137,12 @@ io.sockets.on('connection', function(socket){
           loginSuccess = false;
         } //end of login success else
 
-      }); //end of checkLogin callback   
+      }); //end of checkLogin callback
     } else{
       enteredData(false);
       loginSuccess = false;
     } //end of empty input field else
-      
+
   });//end of socket.on 'login'
 
   //is triggered when user creates a new account
@@ -166,7 +168,7 @@ io.sockets.on('connection', function(socket){
           createdAccount = false;
         } //end of login success else
 
-      }); //end of checkLogin callback 
+      }); //end of checkLogin callback
     } else {
       enteredData(false);
       createdAccount = false;
@@ -192,6 +194,42 @@ io.sockets.on('connection', function(socket){
     io.sockets.emit('get users', users);
   }
 
+
+
+  function getTranslation(message){
+    console.log("MessageTranslator is called");
+    fetch("https://gateway-fra.watsonplatform.net/language-translator/api", {
+      method: "POST",
+      headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+      },
+      data: JSON.stringify({
+        text: [message, message],
+        //muss beim registrieren gewählt werden, spanisch z.B. "en-es-conversational"
+        model_id: ["en-es-conversational"]
+      })
+    })
+
+    .then((response) => {
+        var contentType = response.headers.get("content-type");
+        if(contentType && contentType.includes("application/json")) {
+           return response.json();
+        }
+        throw new TypeError("Oops, we haven't got JSON!");
+    })
+    .then((response) => {
+        console.log("response:" +  JSON.stringify(response));
+        if (response.translation) {
+          translation = response.translation;
+          console.log("this is the translation: " + response.translation);
+          return  translation;
+        }
+    })
+  }
+
+
+
   function getTone(message){
     console.log("get tone is called");
     fetch("https://ecstatic-booth.eu-de.mybluemix.net/tone", {
@@ -204,9 +242,9 @@ io.sockets.on('connection', function(socket){
       body: JSON.stringify({
          texts: [message, message]
       })
-      
+
   })
-  
+
   .then((response) => {
       var contentType = response.headers.get("content-type");
       if(contentType && contentType.includes("application/json")) {
@@ -214,7 +252,7 @@ io.sockets.on('connection', function(socket){
       }
       throw new TypeError("Oops, we haven't got JSON!");
   })
-  .then((response) => { 
+  .then((response) => {
       console.log("response:" +  JSON.stringify(response));
       if (response.mood) {
         mood = response.mood;
@@ -233,9 +271,9 @@ function getToken(){
   request.setRequestHeader("Content-type", "application/json");
   var data = JSON.stringify({"userid":"dash100604", "password":"y_GpBLH_f7u1"});
   request.send(data);
-  
+
     request.onload = function(){
-    
+
       if(request.readyState === 4 ){
         if(request.status === 400){
           var json = JSON.parse(request.responseText);
@@ -245,10 +283,10 @@ function getToken(){
           let tokenObject = JSON.parse("[" + request.responseText + "]");
           tokenString = tokenObject[0].token;
           passToken(tokenString);
-          
+
         }
       }
-      
+
     }
 }
 //===============================================================
@@ -272,9 +310,9 @@ function checkLoginData(username,password,callback){
   var data = JSON.stringify({"command" : "SELECT * FROM LOGIN WHERE USERNAME='" + username + "' AND PASSWORD ='" + password + "'"});
 
   request.send(data);
-  
+
   console.log("state of login request: " + request);
-  //onload 
+  //onload
   request.onload = function(){
     console.log("inside onload of testSQL");
     if(request.readyState === 4 ){
@@ -284,7 +322,7 @@ function checkLoginData(username,password,callback){
       }
       if(request.status === 200){
         var loginData = request.responseText;
-        
+
         if(loginData ===""){
           console.log("login failed");
           setLoginSuccess(false);
@@ -295,12 +333,12 @@ function checkLoginData(username,password,callback){
           setLoginSuccess(true);
           callback();
         }
-        
+
       }
     }
-    
+
   }
- 
+
 }
 
 function setLoginSuccess(success){
@@ -322,9 +360,9 @@ function createNewUser(newUsername,newPassword,callback){
 
   request.send(data);
   console.log(request);
-  
 
-  //onload 
+
+  //onload
   request.onload = function(){
     console.log("inside onload of create");
     console.log(request);
@@ -334,7 +372,7 @@ function createNewUser(newUsername,newPassword,callback){
       }
       if(request.status === 200){
         var createRequest = JSON.parse(request.responseText);
-        
+
         if(createRequest.commands_count === 1){
           console.log("login failed");
           setCreateAccount(false);
@@ -345,10 +383,10 @@ function createNewUser(newUsername,newPassword,callback){
           setCreateAccount(true);
           callback();
         }
-        
+
       }
     }
-    
+
   }
 }
 
