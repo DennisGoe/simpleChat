@@ -9,6 +9,7 @@ console.log("before request is created");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var request = new XMLHttpRequest();
 var tokenString ="";
+var LanguageTranslatorV3 = require('watson-developer-cloud/language-translator/v3');
 
 
 //array that contains all online users
@@ -197,35 +198,27 @@ io.sockets.on('connection', function(socket){
 
 
   function getTranslation(message){
-    console.log("MessageTranslator is called");
-    fetch("https://gateway-fra.watsonplatform.net/language-translator/api", {
-      method: "POST",
-      headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-      },
-      data: JSON.stringify({
-        text: [message, message],
-        //muss beim registrieren gewählt werden, spanisch z.B. "en-es-conversational"
-        model_id: ["en-es-conversational"]
-      })
-    })
 
-    .then((response) => {
-        var contentType = response.headers.get("content-type");
-        if(contentType && contentType.includes("application/json")) {
-           return response.json();
-        }
-        throw new TypeError("Oops, we haven't got JSON!");
-    })
-    .then((response) => {
-        console.log("response:" +  JSON.stringify(response));
-        if (response.translation) {
-          translation = response.translation;
-          console.log("this is the translation: " + response.translation);
-          return  translation;
-        }
-    })
+    const languageTranslator = new LanguageTranslatorV3({
+      version: '2019-04-02',
+      iam_apikey: '2pqEryqIM5wak7DK6HOnsZkY-6V5bOvSm1Afb30SfV2O',
+      url: 'https://gateway-fra.watsonplatform.net/language-translator/api'
+    });
+
+    const translateParams = {
+      text: JSON.stringify(message),
+      model_id: 'en-es'
+    };
+
+    languageTranslator.translate(translateParams)
+      .then(translationResult => {
+          console.log(JSON.stringify(translationResult, null, 2));
+          translatedText = JSON.stringify(translationResult);
+      })
+      .catch(err => {
+          console.log('error:', err);
+  });
+
   }
 
 

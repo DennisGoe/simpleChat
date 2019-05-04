@@ -97,7 +97,7 @@ $(function(){
         var currentdate = new Date();
         var time = (currentdate.getHours() + ":" + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes());
         //Here we wrap the message with all its content inside a div, which will be later displayed at the chat
-        chatMessages.append('<div class ="ownChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent+ '</p>' + '<p id="mood"> Mood: ' + data.mood + '</p>' + '</p>' + '<p id="timestamp">' + time + '</p>');
+        chatMessages.append('<div class ="ownChatMessage" messageID ="' + data.chatID + '">' + '<p id="username">' + data.username + '</p>' + '</br>' + '<p id="messageContent">' + data.msgContent+ '</p>' + '<p id="messageContent">' + data.translation+ '</p>' + '<p id="mood"> Mood: ' + data.mood + '</p>' + '</p>' + '<p id="timestamp">' + time + '</p>');
         $('div[messageID="' + data.chatID + '"]').hide();
      }
       else{
