@@ -355,7 +355,7 @@ p{
 
 
 /**==================LOGIN===========**/
-#username, #password{
+#username, #password, #newUsername, #newPassword{
   font-size: 18px;
   padding-left: 13px;
   width: 100%;
@@ -363,7 +363,7 @@ p{
   margin: 5px;
 }
 
-.login, .newAccount{
+.login, .newAccount, #uploadProfilePic{
   float: left;
   width: 10%;
   text-align: center;

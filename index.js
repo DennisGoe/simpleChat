@@ -20,7 +20,7 @@ amountConnections = [];
 allGroupChats = [];
 
 const fetch = require("node-fetch");
-//const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 
 var translation ="";
 var mood ="";
@@ -147,10 +147,10 @@ io.sockets.on('connection', function(socket){
   });//end of socket.on 'login'
 
   //is triggered when user creates a new account
-  socket.on('new account', function(newUsername, newPassword,enteredData){
-
+  socket.on('new account', function(newUsername, newPassword, profilePictureString,enteredData){
+    console.log("on new account string: " + profilePictureString);
     if(newUsername != "" && newPassword != ""){
-      createNewUser(newUsername,newPassword,function(){
+      createNewUser(newUsername,newPassword,profilePictureString,function(){
         if(createdAccount){
           var singleUser = [];
           enteredData(true);
@@ -300,7 +300,7 @@ function checkLoginData(username,password,callback){
   request.setRequestHeader("Content-type", "application/json");
   request.setRequestHeader('Authorization', 'Bearer ' + tokenString);
 
-  var data = JSON.stringify({"command" : "SELECT * FROM LOGIN WHERE USERNAME='" + username + "' AND PASSWORD ='" + password + "'"});
+  var data = JSON.stringify({"command" : "SELECT * FROM LOGINSYSTEM WHERE USERNAME='" + username + "' AND PASSWORD ='" + password + "'"});
 
   request.send(data);
 
@@ -315,14 +315,15 @@ function checkLoginData(username,password,callback){
       }
       if(request.status === 200){
         var loginData = request.responseText;
+        var strippedString = loginData.slice(28, (loginData.length - 1))
 
-        if(loginData ===""){
+        if(strippedString ===""){
           console.log("login failed");
           setLoginSuccess(false);
           callback();
         }
         else{
-          console.log("LOGIN DATA: " + loginData);
+          console.log("LOGIN DATA: " + strippedString);
           setLoginSuccess(true);
           callback();
         }
@@ -339,7 +340,10 @@ function setLoginSuccess(success){
 }
 
 
-function createNewUser(newUsername,newPassword,callback){
+function createNewUser(newUsername,newPassword,profilePictureString,callback){
+  console.log("inside new user function");
+  // console.log("profile String: " + profilePictureString);
+  console.log(newUsername + ", " + newPassword );
 
   // var createRequest = new XMLHttpRequest();
   request.open('POST','https://dashdb-entry-fra-fra02-01.services.eu-de.bluemix.net/dashdb-api/v2/sql_jobs',true);
@@ -347,7 +351,7 @@ function createNewUser(newUsername,newPassword,callback){
   request.setRequestHeader("Content-type", "application/json");
   request.setRequestHeader('Authorization', 'Bearer ' + tokenString);
 
-  var data = JSON.stringify({"commands" : "INSERT INTO LOGIN VALUES(" + newUsername + "," + newPassword + ");",
+  var data = JSON.stringify({"commands" : "INSERT INTO LOGINSYSTEM VALUES('" + newUsername + "','" + newPassword + "','" + profilePictureString +"');",
                              "separator" : ";",
                              "stop_on_error" : "no"});
 
@@ -366,7 +370,7 @@ function createNewUser(newUsername,newPassword,callback){
       if(request.status === 200){
         var createRequest = JSON.parse(request.responseText);
 
-        if(createRequest.commands_count === 1){
+        if(createRequest[0].commands_count === 1){
           console.log("login failed");
           setCreateAccount(false);
           callback();

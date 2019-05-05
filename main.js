@@ -28,6 +28,9 @@ $(function(){
     var chatTitle = $('.chatTitle');
     var newAccountButton = $('#newAccountButton');
 
+    var uploadedFile = document.getElementById("uploadedFile");
+    var base64String ="";
+
 
     var chatID = "";
     var localUser;
@@ -137,18 +140,36 @@ $(function(){
 
     //this is called when a user creates a new account
     newAccountButton.click(function(){
-      socket.emit("new account", newUsername.val(), newPassword.val(), function(data){
-            if(data){
-              loginFormContainer.hide();
-              messageContainer.show();
-              footer.show();
-              allChatsWrapper.show();
-              onlineUsersWrapper.show();
-              localUser = username.val();
-            } else {
-              alert("empty field");
+      console.log("new account button clicked");
+      var placeholder ="";
+      convertImageToString(placeholder,function(){
+        const sleep = (milliseconds) => {
+            return new Promise(resolve => setTimeout(resolve, milliseconds))
+          }
+          sleep(500).then(() => {
+            console.log("base64 string befor emit: " + base64String);
+            if(newUsername.val()===""|| newPassword ===""){
+              alert("please enter a name passsword and upload a profile picture");
+            }else{
+              socket.emit("new account", newUsername.val(), newPassword.val(), base64String, function(data){
+                if(data){
+                  loginFormContainer.hide();
+                  messageContainer.show();
+                  footer.show();
+                  allChatsWrapper.show();
+                  onlineUsersWrapper.show();
+                  localUser = username.val();
+                } else {
+                  alert("pleas enter a name passsword and upload a profile picture");
+                }
+              });
             }
+            
+          });
+        
+    
       });
+      
     });
 
     //this is called to show all the users
@@ -250,4 +271,29 @@ $(function(){
         }
       }
     }
+
+    function convertImageToString(placeholder,callback){
+      console.log("inside convert image to string");
+      if(uploadedFile.files[0] === undefined){
+        alert("pleas enter a name passsword and upload a profile picture");
+      } else{
+        var file = uploadedFile.files[0];
+        console.log("file: " + file);
+        var reader = new FileReader();
+        reader.onload = function(){
+          base64String = reader.result;
+          setBaseString(base64String);
+        }
+        reader.readAsDataURL(file);
+        callback();
+      }
+   
+    }
+
+    function setBaseString(stringFromImage){
+      this.base64String = stringFromImage;
+      console.log("base64 string in setter: " + base64String);
+    }
+
+
   });//end of big function ALWAYS NEEDS TO BE HERE!
