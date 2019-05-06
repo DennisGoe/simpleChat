@@ -12,6 +12,7 @@ var tokenString ="";
 var LanguageTranslatorV3 = require('watson-developer-cloud/language-translator/v3');
 
 
+
 //array that contains all online users
 users = [];
 //array that is responsible for connected sockets
@@ -281,6 +282,7 @@ function getToken(){
       }
 
     }
+    
 }
 //===============================================================
 
@@ -289,6 +291,7 @@ function getToken(){
 function passToken(passedToken){
   console.log("Inside pass token");
   tokenString = passedToken;
+  console.log("new token: " + tokenString);
 }
 
 
@@ -307,7 +310,6 @@ function checkLoginData(username,password,callback){
   // console.log("state of login request: " + request);
   //onload
   request.onload = function(){
-    console.log("inside onload of testSQL");
     if(request.readyState === 4 ){
       if(request.status === 400){
         var json = JSON.parse(request.responseText);
@@ -326,7 +328,7 @@ function checkLoginData(username,password,callback){
         else{
           console.log("LOGIN DATA: " + strippedString);
           setLoginSuccess(true);
-          io.to(socket.id).emit('Image data', strippedString);
+          io.to(amountConnections[amountConnections.length - 1].id).emit('Image data', strippedString);
           callback();
         }
 
@@ -392,3 +394,10 @@ function createNewUser(newUsername,newPassword,profilePictureString,callback){
 function setCreateAccount(success){
   createNewUser = success;
 }
+
+
+//this causes the server to get an new Bearer token every 5 minutes so no session time out can happen.
+setInterval(function(){
+  getToken();
+  
+},300 * 1000);
