@@ -304,7 +304,7 @@ function checkLoginData(username,password,callback){
 
   request.send(data);
 
-  console.log("state of login request: " + request);
+  // console.log("state of login request: " + request);
   //onload
   request.onload = function(){
     console.log("inside onload of testSQL");
