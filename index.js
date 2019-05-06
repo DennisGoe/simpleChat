@@ -70,7 +70,7 @@ app.use(function(app) {
     setAllHeaders: false,
     safari5: false
   }));
-})
+});
 
 app.use(function (req, res, next) {
   if(req.secure) {
