@@ -57,7 +57,7 @@ app.use(function(app) {
   scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "ajax.googleapis.com"];
   styleSources = ["'self'", "'unsafe-inline'", "ajax.googleapis.com"];
   connectSources = ["'self'"];
-  return app.use(helmet.contentSecurityPolicy({
+  app.use(helmet.contentSecurityPolicy({
     defaultSrc: ["'self'"],
     scriptSrc: scriptSources,
     styleSrc: styleSources,
