@@ -59,13 +59,13 @@ app.use(function(app) {
   connectSources = ["'self'"];
   app.use(helmet.contentSecurityPolicy({
     defaultSrc: ["'self'"],
-    scriptSrc: scriptSources,
+    //scriptSrc: scriptSources,
     styleSrc: styleSources,
-    connectSrc: connectSources,
-    reportUri: '/report-violation',
-    reportOnly: false,
-    setAllHeaders: false,
-    safari5: false
+    //connectSrc: connectSources,
+  //  reportUri: '/report-violation',
+    //reportOnly: false,
+    //setAllHeaders: false,
+    //safari5: false
   }));
 })
 
