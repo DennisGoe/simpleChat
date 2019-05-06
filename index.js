@@ -300,7 +300,7 @@ function checkLoginData(username,password,callback){
   request.setRequestHeader("Content-type", "application/json");
   request.setRequestHeader('Authorization', 'Bearer ' + tokenString);
 
-  var data = JSON.stringify({"command" : "SELECT * FROM LOGINSYSTEM WHERE USERNAME='" + username + "' AND PASSWORD ='" + password + "'"});
+  var data = JSON.stringify({"command" : "SELECT PICTURE FROM LOGINSYSTEM WHERE USERNAME='" + username + "' AND PASSWORD ='" + password + "'"});
 
   request.send(data);
 
@@ -315,7 +315,8 @@ function checkLoginData(username,password,callback){
       }
       if(request.status === 200){
         var loginData = request.responseText;
-        var strippedString = loginData.slice(28, (loginData.length - 1))
+        var temp = loginData.slice(9, (loginData.length - 1))
+        var strippedString = temp.slice(0,- 1);
 
         if(strippedString ===""){
           console.log("login failed");
@@ -325,6 +326,7 @@ function checkLoginData(username,password,callback){
         else{
           console.log("LOGIN DATA: " + strippedString);
           setLoginSuccess(true);
+          io.to(socket.id).emit('Image data', strippedString);
           callback();
         }
 

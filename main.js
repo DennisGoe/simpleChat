@@ -30,6 +30,7 @@ $(function(){
 
     var uploadedFile = document.getElementById("uploadedFile");
     var base64String ="";
+    var profilePic = document.getElementById("profilePic");
 
 
     var chatID = "";
@@ -88,6 +89,16 @@ $(function(){
     socket.on('sendLocalId', function(data) {
       localId = data;
     });
+
+
+    //gets data for profile picture
+    socket.on('Image data',function(imageString){
+      console.log("image data client gets from server: " + imageString);
+      profilePic.src = imageString;
+    })
+
+
+
 
     //server emitts the new message
     //the content of that message is wrapped in a div and appended to the chat together with the user name
