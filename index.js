@@ -49,8 +49,6 @@ app.use(express.static('./'));
 
 app.use(function(app) {
   var connectSources, helmet, scriptSources, styleSources;
-  helmet = require("helmet");
-  app.use(helmet());
   app.use(helmet.hidePoweredBy());
   app.use(helmet.noSniff());
   app.use(helmet.crossdomain());
