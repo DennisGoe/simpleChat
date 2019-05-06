@@ -8,7 +8,8 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="https://code.jquery.com/jquery-latest.min.js"
+    integrity="sha384-UM1JrZIpBwVf5jj9dTKVvGiiZPZTLVoq4sfdvIe9SBumsvCuv6AHDNtEiIb5h1kU" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src ="main.js"></script>
 
@@ -33,7 +34,7 @@
                         </br>
                         <input type="submit" class ="btn btn-primary" value="Login"/>
                     </div>
-                    
+
                     <div class="newAccount">
                         <label>Create a new account?</label>
                         <input type="text" class="form-control" id="newUsername" placeholder="Username...">
@@ -57,9 +58,9 @@
 <div class="col-md-4" id="onlineUsersWrapper">
   <h3 id="onlineUser">Online Users</h3>
   <ul class="list-group" id="users"></ul>
-</div> 
+</div>
     <div id="messageContainer">
-      
+
 
       <!--chat-->
       <div class="col-md-8" id="middlePart">
