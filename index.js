@@ -20,7 +20,8 @@ amountConnections = [];
 //array that contains all group chats
 allGroupChats = [];
 
-
+const helmet = require('helmet');
+const xssFilter = require('x-xss-protection');
 const fetch = require("node-fetch");
 const bodyParser = require('body-parser');
 
