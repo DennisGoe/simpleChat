@@ -28,6 +28,9 @@ $(function(){
     var chatTitle = $('.chatTitle');
     var newAccountButton = $('#newAccountButton');
 
+    var inputLanguage = $('#inputLanguage');
+    var outputLanguage = $('#outputLanguage');
+
     var uploadedFile = document.getElementById("uploadedFile");
     var base64String ="";
     var profilePic = document.getElementById("profilePic");
@@ -135,7 +138,7 @@ $(function(){
       loginForm.submit(function(e){
       e.preventDefault();
       console.log("trigger emit login");
-      socket.emit('login', username.val(),password.val(), function(data){
+      socket.emit('login', username.val(),password.val(), inputLanguage.val(), outputLanguage.val(), function(data){
         if(data){
             loginFormContainer.hide();
             messageContainer.show();
@@ -175,12 +178,12 @@ $(function(){
                 }
               });
             }
-            
+
           });
-        
-    
+
+
       });
-      
+
     });
 
     //this is called to show all the users
@@ -298,7 +301,7 @@ $(function(){
         reader.readAsDataURL(file);
         callback();
       }
-   
+
     }
 
     function setBaseString(stringFromImage){

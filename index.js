@@ -30,6 +30,8 @@ var translation ="";
 var mood ="";
 var loginSuccess = false;
 var createdAccount = false;
+var inputLanguage = 'en';
+var outputLanguage = 'es';
 
 
 
@@ -247,7 +249,8 @@ io.sockets.on('connection', function(socket){
 
     const translateParams = {
       text: JSON.stringify(message),
-      model_id: 'en-es'
+      //model_id: 'en-es'
+      model_id: inputLanguage + "-" + outputLanguage,
     };
 
     languageTranslator.translate(translateParams)
@@ -259,6 +262,7 @@ io.sockets.on('connection', function(socket){
       .catch(err => {
           console.log('error:', err);
   });
+
 
   }
 
