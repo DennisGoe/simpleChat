@@ -24,6 +24,7 @@ const helmet = require('helmet');
 const xssFilter = require('x-xss-protection');
 const fetch = require("node-fetch");
 const bodyParser = require('body-parser');
+const sixtyDaysInSeconds = 5184000;
 
 var translation ="";
 var mood ="";
@@ -40,8 +41,9 @@ var createdAccount = false;
 server.listen(port);
 console.log("listening port " + port);
 
+app.use(xssFilter());
 
-
+app.use(helmet());
 //use static files like additional javascript files or css files linked in the html file
 app.use(express.static('./'));
 
@@ -49,15 +51,9 @@ app.use(function(app) {
   var connectSources, helmet, scriptSources, styleSources;
   helmet = require("helmet");
   app.use(helmet());
-  app.use(helmet.xssFilter());
   app.use(helmet.hidePoweredBy());
   app.use(helmet.noSniff());
-  app.use(helmet.noCache());
   app.use(helmet.crossdomain());
-  app.use(helmet.hsts({
-    maxAge: 5184000
-  }));
-  app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
   scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "ajax.googleapis.com"];
   styleSources = ["'self'", "'unsafe-inline'", "ajax.googleapis.com"];
   connectSources = ["'self'"];
@@ -71,7 +67,7 @@ app.use(function(app) {
     setAllHeaders: false,
     safari5: false
   }));
-});
+})
 
 app.use(function (req, res, next) {
   if(req.secure) {
@@ -82,6 +78,9 @@ app.use(function (req, res, next) {
 });
 
 
+app.use(helmet.hsts({
+  maxAge: sixtyDaysInSeconds
+}));
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/' + 'index.html');
