@@ -54,18 +54,15 @@ app.use(function(app) {
   app.use(helmet.hidePoweredBy());
   app.use(helmet.noSniff());
   app.use(helmet.crossdomain());
-  scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "ajax.googleapis.com"];
-  styleSources = ["'self'", "'unsafe-inline'", "ajax.googleapis.com"];
+  scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'"];
+  styleSources = ["'self'", "'unsafe-inline'"];
   connectSources = ["'self'"];
   app.use(helmet.contentSecurityPolicy({
     defaultSrc: ["'self'"],
-    //scriptSrc: scriptSources,
+    scriptSrc: scriptSources,
     styleSrc: styleSources,
-    //connectSrc: connectSources,
-  //  reportUri: '/report-violation',
-    //reportOnly: false,
-    //setAllHeaders: false,
-    //safari5: false
+    connectSrc: connectSources,
+    reportUri: '/report-violation',
   }));
 })
 
@@ -78,13 +75,15 @@ app.use(function (req, res, next) {
 });
 
 
-app.use(helmet.hsts({
-  maxAge: sixtyDaysInSeconds
-}));
+
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/' + 'index.html');
 });
+
+app.use(helmet.hsts({
+  maxAge: sixtyDaysInSeconds
+}));
 //===================DO NOT TOUCH!!=================
 
 console.log("calling to get token");
