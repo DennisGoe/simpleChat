@@ -47,6 +47,27 @@ app.use(helmet());
 //use static files like additional javascript files or css files linked in the html file
 app.use(express.static('./'));
 
+app.use(function(app) {
+  var connectSources, helmet, scriptSources, styleSources;
+  helmet = require("helmet");
+  app.use(helmet());
+  app.use(helmet.hidePoweredBy());
+  app.use(helmet.noSniff());
+  app.use(helmet.crossdomain());
+  scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "ajax.googleapis.com"];
+  styleSources = ["'self'", "'unsafe-inline'", "ajax.googleapis.com"];
+  connectSources = ["'self'"];
+  return app.use(helmet.contentSecurityPolicy({
+    defaultSrc: ["'self'"],
+    scriptSrc: scriptSources,
+    styleSrc: styleSources,
+    connectSrc: connectSources,
+    reportUri: '/report-violation',
+    reportOnly: false,
+    setAllHeaders: false,
+    safari5: false
+  }));
+})
 
 app.use(function (req, res, next) {
   if(req.secure) {
