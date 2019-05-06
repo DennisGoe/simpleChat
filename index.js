@@ -40,6 +40,18 @@ console.log("listening port " + port);
 
 //use static files like additional javascript files or css files linked in the html file
 app.use(express.static('./'));
+
+
+app.use(function (req, res, next) {
+  if(req.secure) {
+    next();
+  } else {
+    res.redirect('https://' + req.headers.host + req.url);
+  }
+});
+
+
+
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/' + 'index.html');
 });
@@ -282,7 +294,7 @@ function getToken(){
       }
 
     }
-    
+
 }
 //===============================================================
 
@@ -399,5 +411,5 @@ function setCreateAccount(success){
 //this causes the server to get an new Bearer token every 5 minutes so no session time out can happen.
 setInterval(function(){
   getToken();
-  
+
 },300 * 1000);
