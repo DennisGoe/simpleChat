@@ -67,14 +67,11 @@ app.use(function(app) {
 })
 
 app.use(function (req, res, next) {
-  if (location.protocol !== "https:") {
-  location.protocol = "https:";
-}
-  //if(req.secure) {
-//    next();
-//  } else {
-//    res.redirect('https://' + req.headers.host + req.url);
-//  }
+  if(req.secure) {
+    next();
+  } else {
+    res.redirect('https://' + req.headers.host + req.url);
+  }
 });
 
 
