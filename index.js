@@ -226,7 +226,8 @@ io.sockets.on('connection', function(socket){
     languageTranslator.translate(translateParams)
       .then(translationResult => {
           console.log(JSON.stringify(translationResult, null, 2));
-          translatedText = JSON.stringify(translationResult);
+          translation = translationResult.translations[0].translation;
+          console.log(translation);
       })
       .catch(err => {
           console.log('error:', err);
