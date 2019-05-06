@@ -20,8 +20,11 @@ amountConnections = [];
 //array that contains all group chats
 allGroupChats = [];
 
+const helmet = require('helmet');
+const xssFilter = require('x-xss-protection');
 const fetch = require("node-fetch");
 const bodyParser = require('body-parser');
+const sixtyDaysInSeconds = 5184000;
 
 var translation ="";
 var mood ="";
@@ -38,6 +41,9 @@ var createdAccount = false;
 server.listen(port);
 console.log("listening port " + port);
 
+app.use(xssFilter());
+
+app.use(helmet());
 //use static files like additional javascript files or css files linked in the html file
 app.use(express.static('./'));
 
@@ -51,6 +57,9 @@ app.use(function (req, res, next) {
 });
 
 
+app.use(helmet.hsts({
+  maxAge: sixtyDaysInSeconds
+}));
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/' + 'index.html');
