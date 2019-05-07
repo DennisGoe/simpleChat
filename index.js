@@ -129,7 +129,7 @@ io.sockets.on('connection', function(socket){
       return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
 
-    sleep(2000).then(() => {
+    sleep(2500).then(() => {
 
 
       console.log("The input is" + inputLanguage);
