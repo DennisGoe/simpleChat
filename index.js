@@ -30,8 +30,8 @@ var translation ="";
 var mood ="";
 var loginSuccess = false;
 var createdAccount = false;
-var inputLanguage = 'en';
-var outputLanguage = 'es';
+//var inputLanguage = 'en';
+//var outputLanguage = 'es';
 
 
 
@@ -122,15 +122,24 @@ io.sockets.on('connection', function(socket){
   //is triggered once a message is sent. the 'send message' event is getting emitted to the client
   //the callback function sends 'data' --> the messga it self and the username of the sender
   //the client creates a div that contains these data then
-  socket.on('send message', function(data, chatID){
-     getTranslation(data);
+  socket.on('send message', function(data, inputLanguage, outputLanguage, chatID){
+     getTranslation(data, inputLanguage, outputLanguage);
      getTone(data);
      const sleep = (milliseconds) => {
       return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
 
-    sleep(700).then(() => {
+    sleep(2000).then(() => {
+
+
+      console.log("The input is" + inputLanguage);
+      console.log("The ouput is" + outputLanguage);
+
+
+
       console.log("the mood in send message is: " + mood);
+      console.log("the translation went from too: " + inputLanguage + " " + outputLanguage);
+      console.log("the translated text is: " + translation);
       //Every user is getting the global chat message
     if(chatID === "globalChat"){
       io.sockets.emit('new message',{msgContent: data, username: socket.username,chatID: chatID, mood: mood, translation: translation});
@@ -239,13 +248,16 @@ io.sockets.on('connection', function(socket){
 
 
 
-  function getTranslation(message){
+  function getTranslation(message, inputLanguage, outputLanguage){
 
     const languageTranslator = new LanguageTranslatorV3({
       version: '2019-04-02',
       iam_apikey: '2pqEryqIM5wak7DK6HOnsZkY-6V5bOvSm1Afb30SfV2O',
       url: 'https://gateway-fra.watsonplatform.net/language-translator/api'
     });
+
+
+
 
     const translateParams = {
       text: JSON.stringify(message),
@@ -255,14 +267,17 @@ io.sockets.on('connection', function(socket){
 
     languageTranslator.translate(translateParams)
       .then(translationResult => {
+          console.log("this is the input" + inputLanguage);
+          console.log("this is the output" + outputLanguage);
           console.log(JSON.stringify(translationResult, null, 2));
           translation = translationResult.translations[0].translation;
           console.log(translation);
       })
       .catch(err => {
+          console.log(inputLanguage);
+          console.log(outputLanguage);
           console.log('error:', err);
   });
-
 
   }
 

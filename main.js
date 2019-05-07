@@ -85,7 +85,7 @@ $(function(){
     //then the 'new message' event is emitted by the server and passed to the client
     messageForm.submit(function(e){
       e.preventDefault();
-      socket.emit('send message', message.val(), tempChatID);
+      socket.emit('send message', message.val(),  inputLanguage.val(), outputLanguage.val(), tempChatID);
       message.val('');
     });
 
@@ -138,7 +138,7 @@ $(function(){
       loginForm.submit(function(e){
       e.preventDefault();
       console.log("trigger emit login");
-      socket.emit('login', username.val(),password.val(), inputLanguage.val(), outputLanguage.val(), function(data){
+      socket.emit('login', username.val(),password.val(), function(data){
         if(data){
             loginFormContainer.hide();
             messageContainer.show();
