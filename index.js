@@ -29,7 +29,7 @@ const sixtyDaysInSeconds = 5184000;
 var translation ="";
 var mood ="";
 var loginSuccess = false;
-var createdAccount = false;
+var createSuccess = false;
 //var inputLanguage = 'en';
 //var outputLanguage = 'es';
 
@@ -202,28 +202,28 @@ io.sockets.on('connection', function(socket){
     console.log("on new account string: " + profilePictureString);
     if(newUsername != "" && newPassword != ""){
       createNewUser(newUsername,newPassword,profilePictureString,function(){
-        if(createdAccount){
+        if(createSuccess){
           var singleUser = [];
           enteredData(true);
-          socket.username = username;
+          socket.username = newUsername;
           //Sets the variables in the array for the mulitcasts
-          singleUser[0] = username;
+          singleUser[0] = newUsername;
           singleUser[1] = amountConnections[amountConnections.length - 1].id;
           //Adds the user to the server list
           users.push(singleUser);
           updateUsernames();
           //Multicasts the new connections with the socket name to all users
           io.sockets.emit('new connection', socket.username);
-          createdAccount = false;
+          createSuccess = false;
         }else{
           enteredData(false);
-          createdAccount = false;
+          createSuccess = false;
         } //end of login success else
 
       }); //end of checkLogin callback
     } else {
       enteredData(false);
-      createdAccount = false;
+      createSuccess = false;
     }
   })
 
@@ -362,7 +362,7 @@ function checkLoginData(username,password,callback){
   request.setRequestHeader("Content-type", "application/json");
   request.setRequestHeader('Authorization', 'Bearer ' + tokenString);
 
-  var data = JSON.stringify({"command" : "SELECT PICTURE FROM LOGINSYSTEM WHERE USERNAME='" + username + "' AND PASSWORD ='" + password + "'"});
+  var data = JSON.stringify({"command" : "SELECT PICTURE FROM LOGINDATA WHERE USERNAME='" + username + "' AND PASSWORD ='" + password + "'"});
 
   request.send(data);
 
@@ -414,7 +414,7 @@ function createNewUser(newUsername,newPassword,profilePictureString,callback){
   request.setRequestHeader("Content-type", "application/json");
   request.setRequestHeader('Authorization', 'Bearer ' + tokenString);
 
-  var data = JSON.stringify({"commands" : "INSERT INTO LOGINSYSTEM VALUES('" + newUsername + "','" + newPassword + "','" + profilePictureString +"');",
+  var data = JSON.stringify({"commands" : "INSERT INTO LOGINDATA VALUES('" + newUsername + "','" + newPassword + "','" + profilePictureString +"');",
                              "separator" : ";",
                              "stop_on_error" : "no"});
 
@@ -430,10 +430,10 @@ function createNewUser(newUsername,newPassword,profilePictureString,callback){
       if(request.status === 400){
         console.log("SOMEHOW NOT AVAILABLE");
       }
-      if(request.status === 200){
+      if(request.status === 201){
         var createRequest = JSON.parse(request.responseText);
-
-        if(createRequest[0].commands_count === 1){
+        console.log("CREATE REQUEST: " + createRequest);
+        if(createRequest === ""){
           console.log("login failed");
           setCreateAccount(false);
           callback();
@@ -441,6 +441,7 @@ function createNewUser(newUsername,newPassword,profilePictureString,callback){
         else{
           console.log("NEW DATA: " + createRequest);
           setCreateAccount(true);
+          io.to(amountConnections[amountConnections.length - 1].id).emit('Image data', profilePictureString);
           callback();
         }
 
@@ -451,7 +452,7 @@ function createNewUser(newUsername,newPassword,profilePictureString,callback){
 }
 
 function setCreateAccount(success){
-  createNewUser = success;
+  createSuccess = success;
 }
 
 
